@@ -1,0 +1,2993 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETF SIGNAL TERMINAL v5 · Dual AI Flow Intelligence</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+:root {
+  --bg:#0a0a0a; --bg2:#111; --bg3:#181818; --bg4:#1e1e1e;
+  --border:#222; --border2:#2a2a2a; --border3:#333;
+  --text:#e8e8e8; --muted:#666; --dim:#3a3a3a;
+  --green:#00d084; --red:#ff4444; --amber:#ffaa00;
+  --blue:#4488ff; --purple:#aa66ff; --cyan:#00ccdd; --pink:#ff66aa;
+  --font:'JetBrains Mono','Fira Mono','Courier New',monospace;
+}
+/* ☀️ LIGHT MODE */
+body.light {
+  --bg:#f0f2f5; --bg2:#ffffff; --bg3:#e8eaed; --bg4:#dde0e6;
+  --border:#d0d4dc; --border2:#c4c9d4; --border3:#b0b7c3;
+  --text:#1a1d23; --muted:#5a6275; --dim:#9099aa;
+  --green:#007a4d; --red:#cc2200; --amber:#b87800;
+  --blue:#2255cc; --purple:#7733cc; --cyan:#0077aa; --pink:#cc3377;
+}
+body.light .topbar{background:#fff;border-color:#d0d4dc;}
+body.light .tabs{background:#f7f8fa;border-color:#d0d4dc;}
+body.light .trial-bar{background:#fff8e6;border-color:#b87800;color:#b87800;}
+body.light .sidebar{background:#f7f8fa;}
+body.light .sbox{background:#fff;border-color:#d0d4dc;}
+body.light .tcard{background:#fff;border-color:#d0d4dc;}
+body.light .tcard:hover{border-color:#b87800;}
+body.light .ftable tr:hover td{background:#f0f2f5;}
+body.light .ai-output{background:#fff;border-color:#d0d4dc;color:#1a1d23;}
+body.light .ai-loading{color:#b87800;}
+body.light .ai-dot{background:#b87800;}
+body.light .warn-bar{background:#fff0f0;border-color:#cc2200;color:#cc2200;}
+body.light .overnight-box{background:#fff0f0;border-color:#cc2200;}
+body.light .ow-msg{color:#aa3300;}
+body.light .btn{border-color:#c4c9d4;color:#5a6275;}
+body.light .btn:hover{border-color:#b87800;color:#b87800;}
+body.light .btn-primary{background:#fff3d0;border-color:#b87800;color:#b87800;}
+body.light .btn-ai{background:#f0e8ff;border-color:#7733cc;color:#7733cc;}
+body.light .btn-log{background:#fff3d0;border-color:#b87800;color:#b87800;}
+body.light .tform select,body.light .tform input{background:#f7f8fa;border-color:#c4c9d4;color:#1a1d23;}
+body.light .add-row input{background:#fff;border-color:#c4c9d4;color:#1a1d23;}
+body.light .scan-controls input{background:#fff;border-color:#c4c9d4;color:#1a1d23;}
+body.light .alert-item{background:#f7f8fa;}
+body.light .bitem{background:#fff;border-color:#d0d4dc;}
+body.light .etoro-note{background:#f7f8fa;border-color:#d0d4dc;}
+body.light .section-lbl{color:#9099aa;}
+body.light .divider{background:#d0d4dc;}
+body.light ::-webkit-scrollbar-track{background:#f0f2f5;}
+body.light ::-webkit-scrollbar-thumb{background:#c4c9d4;}
+body.light .pill-green{background:#e6fff4;color:#007a4d;border-color:#b3ffe0;}
+body.light .pill-amber{background:#fff8e6;color:#b87800;border-color:#ffe4a0;}
+body.light .pill-purple{background:#f5eeff;color:#7733cc;border-color:#ddc8ff;}
+body.light .pill-cyan{background:#e6f7ff;color:#0077aa;border-color:#b3e8ff;}
+body.light .sp-bear{background:#fff0ee;color:#cc2200;}
+body.light .sp-bull{background:#e8fff5;color:#007a4d;}
+body.light .sp-warn{background:#fff8e6;color:#b87800;}
+body.light .sp-whale{background:#e6f7ff;color:#0077aa;}
+body.light .sp-div{background:#f5eeff;color:#7733cc;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:12px;min-height:100vh;}
+button,input,select{font-family:var(--font);}
+::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-track{background:var(--bg);} ::-webkit-scrollbar-thumb{background:var(--border3);}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;border-bottom:1px solid var(--border);background:var(--bg2);position:sticky;top:0;z-index:200;}
+.logo{font-size:11px;font-weight:700;letter-spacing:.2em;color:var(--amber);}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px;}
+.dot-green{background:var(--green);animation:pulse 2s infinite;}
+.dot-red{background:var(--red);}
+.dot-amber{background:var(--amber);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.tb-pill{font-size:9px;padding:2px 7px;border-radius:2px;letter-spacing:.05em;border:1px solid;}
+.pill-green{background:#001a0a;color:var(--green);border-color:#003318;}
+.pill-amber{background:#1a0f00;color:var(--amber);border-color:#332200;}
+.pill-red{background:#1a0000;color:var(--red);border-color:#330000;}
+.pill-blue{background:#000e1a;color:var(--blue);border-color:#001833;}
+.pill-purple{background:#0d0018;color:var(--purple);border-color:#1a0033;}
+.pill-cyan{background:#001a1a;color:var(--cyan);border-color:#003333;}
+
+.warn-bar{background:#1a0000;border:1px solid var(--red);color:var(--red);padding:3px 10px;font-size:10px;border-radius:3px;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg2);}
+.tab{padding:8px 14px;font-size:10px;letter-spacing:.1em;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber);}
+
+/* LAYOUT */
+.main{display:grid;grid-template-columns:1fr 1fr 1fr 300px;gap:1px;background:var(--border);min-height:calc(100vh - 80px);}
+.panel{background:var(--bg);padding:11px;overflow-y:auto;}
+.panel.full{grid-column:1/5;}
+.panel.two{grid-column:span 2;}
+.panel.three{grid-column:span 3;}
+.sidebar{background:var(--bg2);padding:11px;overflow-y:auto;max-height:calc(100vh - 80px);}
+
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;padding-bottom:7px;border-bottom:1px solid var(--border2);}
+.pt{font-size:9px;letter-spacing:.2em;color:var(--muted);}
+
+/* TICKER CARDS */
+.tcard{background:var(--bg2);border:1px solid var(--border2);border-radius:3px;padding:10px;margin-bottom:7px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s;}
+.tcard:hover{border-color:var(--amber);}
+.tcard.div-signal{border-color:var(--purple);}
+.tcard.whale-signal{border-color:var(--cyan);}
+.tcard-badge{position:absolute;top:0;right:0;font-size:8px;font-weight:700;padding:2px 6px;letter-spacing:.1em;}
+.badge-div{background:var(--purple);color:#000;}
+.badge-whale{background:var(--cyan);color:#000;}
+.badge-bull{background:var(--green);color:#000;}
+.badge-bear{background:var(--red);color:#fff;}
+
+.trow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;}
+.tname{font-size:15px;font-weight:700;}
+.tname.bull{color:var(--green);}
+.tname.bear{color:var(--red);}
+.tprice{font-size:20px;font-weight:700;}
+.tchange{font-size:11px;margin-left:6px;}
+.up{color:var(--green);}
+.down{color:var(--red);}
+.neutral{color:var(--muted);}
+
+.tmeta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;margin-top:6px;}
+.ml{font-size:8px;color:var(--muted);letter-spacing:.08em;}
+.mv{font-size:10px;}
+
+.fbar{display:flex;align-items:center;gap:5px;margin-top:7px;}
+.fl{font-size:8px;color:var(--muted);width:26px;}
+.ft{flex:1;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.ff-put{height:100%;background:var(--red);border-radius:2px;}
+.ff-call{height:100%;background:var(--green);border-radius:2px;}
+.fp{font-size:9px;width:26px;text-align:right;}
+
+.srow{display:flex;flex-wrap:wrap;gap:3px;margin-top:7px;}
+.sp{font-size:8px;padding:2px 5px;border-radius:2px;font-weight:600;}
+.sp-bear{background:#1a0000;color:var(--red);}
+.sp-bull{background:#001a0a;color:var(--green);}
+.sp-warn{background:#1a0f00;color:var(--amber);}
+.sp-whale{background:#001a1a;color:var(--cyan);}
+.sp-div{background:#0d0018;color:var(--purple);}
+
+/* FLOW TABLE */
+.ftable{width:100%;border-collapse:collapse;}
+.ftable th{font-size:8px;letter-spacing:.1em;color:var(--muted);text-align:left;padding:4px 5px;border-bottom:1px solid var(--border2);font-weight:400;}
+.ftable td{padding:5px 5px;font-size:10px;border-bottom:1px solid var(--border);}
+.ftable tr:hover td{background:var(--bg2);}
+.type-put{color:var(--red);font-weight:700;}
+.type-call{color:var(--green);font-weight:700;}
+.side-ask{color:var(--red);}
+.side-bid{color:var(--green);}
+.side-mid{color:var(--muted);}
+.sent-bear{color:var(--red);}
+.sent-bull{color:var(--green);}
+.prem{color:var(--amber);}
+.star{color:var(--purple);font-weight:700;}
+
+/* BUFFETT SCANNER */
+.bitem{background:var(--bg2);border:1px solid var(--border2);border-radius:3px;padding:9px;margin-bottom:6px;display:flex;align-items:flex-start;gap:8px;}
+.bicon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.bticker{font-size:13px;font-weight:700;color:var(--amber);}
+.bprice{font-size:12px;color:var(--text);margin-left:6px;}
+.btag{font-size:8px;padding:2px 5px;border-radius:2px;margin-left:4px;}
+.btag-insider{background:#001a1a;color:var(--cyan);border:1px solid #002a2a;}
+.btag-whale{background:#0d0018;color:var(--purple);border:1px solid #1a0033;}
+.btag-congress{background:#1a0f00;color:var(--amber);border:1px solid #2a1800;}
+.btag-vol{background:#001a0a;color:var(--green);border:1px solid #003318;}
+.btag-unver{background:#1a1a00;color:#aaaa00;border:1px solid #333300;font-size:7px;}
+.bdesc{font-size:9px;color:var(--muted);margin-top:3px;line-height:1.5;}
+.bwatch{background:transparent;border:1px solid var(--border3);color:var(--muted);font-size:9px;padding:3px 8px;border-radius:2px;cursor:pointer;margin-top:5px;transition:all .15s;}
+.bwatch:hover{border-color:var(--amber);color:var(--amber);}
+.bwatch.watching{border-color:var(--green);color:var(--green);}
+
+/* AI PANEL */
+.ai-output{font-size:10px;line-height:1.7;color:var(--text);white-space:pre-wrap;background:var(--bg2);border:1px solid var(--border2);border-radius:3px;padding:12px;min-height:120px;}
+.ai-loading{display:flex;align-items:center;gap:8px;color:var(--amber);font-size:10px;padding:20px;}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse 1s infinite;}
+.ai-dot:nth-child(2){animation-delay:.2s;}
+.ai-dot:nth-child(3){animation-delay:.4s;}
+
+/* SIDEBAR */
+.sbox{background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:10px;margin-bottom:8px;}
+.stitle{font-size:8px;letter-spacing:.18em;color:var(--muted);margin-bottom:8px;text-transform:uppercase;}
+
+.compound-num{font-size:26px;font-weight:700;color:var(--green);}
+.cprog{height:4px;background:var(--border2);border-radius:2px;overflow:hidden;margin-top:8px;}
+.cpfill{height:100%;background:linear-gradient(90deg,var(--green),var(--amber));border-radius:2px;transition:width .5s;}
+.csteps{display:flex;justify-content:space-between;margin-top:4px;font-size:8px;color:var(--muted);}
+.csdone{color:var(--green);}
+
+.tform{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.tform select,.tform input{background:var(--bg);border:1px solid var(--border2);color:var(--text);font-family:var(--font);font-size:10px;padding:5px 6px;border-radius:2px;outline:none;width:100%;}
+.tform select:focus,.tform input:focus{border-color:var(--amber);}
+.tform-full{grid-column:1/3;}
+.btn-log{grid-column:1/3;background:#1a0f00;border:1px solid var(--amber);color:var(--amber);font-family:var(--font);font-size:9px;padding:6px;border-radius:2px;cursor:pointer;letter-spacing:.12em;transition:background .15s;}
+.btn-log:hover{background:#2a1800;}
+
+.pnl-big{font-size:24px;font-weight:700;}
+.pnl-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+.pstat-l{font-size:8px;color:var(--muted);}
+.pstat-v{font-size:11px;margin-top:1px;}
+
+.tlog-item{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:10px;}
+.tlog-item:last-child{border-bottom:none;}
+.tl-ticker{font-weight:700;color:var(--amber);}
+.tl-dir{font-size:8px;color:var(--muted);}
+
+.alert-item{padding:6px 8px;border-left:2px solid var(--border2);margin-bottom:4px;background:var(--bg3);border-radius:0 3px 3px 0;font-size:10px;}
+.alert-item.crit{border-left-color:var(--red);}
+.alert-item.whale{border-left-color:var(--cyan);}
+.alert-item.div{border-left-color:var(--purple);}
+.alert-item.info{border-left-color:var(--blue);}
+.alert-time{font-size:8px;color:var(--muted);margin-bottom:1px;}
+
+.overnight-box{background:#1a0000;border:1px solid var(--red);border-radius:3px;padding:9px;margin-bottom:8px;}
+.ow-title{font-size:10px;color:var(--red);font-weight:700;margin-bottom:4px;}
+.ow-msg{font-size:9px;color:#ff8888;line-height:1.5;}
+
+/* BUTTONS */
+.btn{background:transparent;border:1px solid var(--border3);color:var(--muted);font-family:var(--font);font-size:9px;padding:3px 9px;border-radius:2px;cursor:pointer;transition:all .15s;letter-spacing:.08em;}
+.btn:hover{border-color:var(--amber);color:var(--amber);}
+.btn-primary{background:#1a0f00;border-color:var(--amber);color:var(--amber);}
+.btn-primary:hover{background:#2a1800;}
+.btn-ai{background:#0d0018;border-color:var(--purple);color:var(--purple);}
+.btn-ai:hover{background:#1a0033;}
+
+.divider{height:1px;background:var(--border);margin:8px 0;}
+.section-lbl{font-size:8px;letter-spacing:.2em;color:var(--dim);margin-bottom:5px;text-transform:uppercase;}
+
+/* PREMARKET */
+.pm-item{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);}
+.pm-item:last-child{border-bottom:none;}
+.pm-tick{font-size:12px;font-weight:700;color:var(--amber);width:48px;}
+.pm-ch{font-size:13px;font-weight:700;}
+
+/* INPUT ROW */
+.add-row{display:flex;gap:6px;margin-bottom:10px;}
+.add-row input{background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-family:var(--font);font-size:11px;padding:5px 8px;border-radius:2px;outline:none;flex:1;}
+.add-row input:focus{border-color:var(--amber);}
+
+.etoro-note{font-size:8px;color:var(--muted);background:var(--bg3);border:1px solid var(--border2);border-radius:2px;padding:5px 8px;line-height:1.5;}
+.etoro-note span{color:var(--amber);}
+
+/* BIG MOVE */
+.bm-bar{height:5px;background:var(--border2);border-radius:3px;position:relative;overflow:hidden;}
+.bm-fill{position:absolute;left:0;top:0;height:100%;border-radius:3px;}
+
+/* SCANNER CONTROLS */
+.scan-controls{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.scan-controls input{background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-family:var(--font);font-size:10px;padding:4px 8px;border-radius:2px;outline:none;width:80px;}
+.scan-controls input:focus{border-color:var(--amber);}
+
+/* TRIAL REMINDER */
+.trial-bar{background:#1a0f00;border-bottom:1px solid var(--amber);padding:4px 14px;font-size:9px;color:var(--amber);display:flex;align-items:center;justify-content:space-between;}
+</style>
+</head>
+<body>
+<!-- ============================================================
+     ⚙️ API KEY CONFIGURATION — ΒΑΛΕ ΤΑ KEYS ΣΟΥ ΕΔΩ
+     Άνοιξε το αρχείο σε text editor και συμπλήρωσε παρακάτω.
+     ============================================================ -->
+<script>
+  // 🔑 TWELVE DATA — από το twelvedata.com/account/api-keys
+  window._TD_KEY = '';
+
+  // 🔑 CLAUDE (Anthropic) — κύριος AI analyst
+  window._CLAUDE_KEY = '';
+  window._CLAUDE_MODEL = 'claude-sonnet-4-6';
+
+  // 🔑 OPENAI — ανεξάρτητη δεύτερη γνώμη (ChatGPT agent)
+  window._OPENAI_KEY = '';
+  window._OPENAI_MODEL = 'gpt-5.2';
+
+  // Τα runtime keys αποθηκεύονται μόνο για το τρέχον browser tab.
+  // Δεν γράφονται μέσα στο deployed HTML.
+  try {
+    window._CLAUDE_KEY = sessionStorage.getItem('etf_claude_key') || window._CLAUDE_KEY || '';
+    window._OPENAI_KEY = sessionStorage.getItem('etf_openai_key') || window._OPENAI_KEY || '';
+    window._CLAUDE_MODEL = localStorage.getItem('etf_claude_model') || window._CLAUDE_MODEL;
+    window._OPENAI_MODEL = localStorage.getItem('etf_openai_model') || window._OPENAI_MODEL;
+  } catch (_) {}
+
+  // ℹ️ Αν δεν έχεις keys, το deterministic terminal συνεχίζει να δουλεύει.
+</script>
+<!-- ============================================================ -->
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback, useMemo } = React;
+
+// ==================== CONSTANTS ====================
+const TD_KEY = window._TD_KEY || '';
+const DEFAULT_TICKERS = ['SOXL','SOXS','NAIL','TQQQ','QQQ','SPY','VOO','PLUG','MBLY','SOXS'];
+const STEPS = [16, 27.2, 46.2, 78.5, 133.5, 227, 386, 500, 1000, 2000, 4000, 8000, 16000];
+
+// ==================== HELPERS ====================
+const fmt = (n, d=2) => n == null ? '—' : Number(n).toFixed(d);
+const fmtK = v => v >= 1000000 ? `$${(v/1000000).toFixed(1)}M` : v >= 1000 ? `$${(v/1000).toFixed(0)}K` : `$${v}`;
+const now_gr = () => new Date().toLocaleTimeString('el-GR',{timeZone:'Europe/Athens',hour12:false});
+const now_et = () => new Date().toLocaleTimeString('en-US',{timeZone:'America/New_York',hour12:false});
+
+function isMarketOpen() {
+  const now = new Date();
+  const et = new Date(now.toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const h = et.getHours(), m = et.getMinutes(), day = et.getDay();
+  if (day === 0 || day === 6) return false;
+  const tot = h * 60 + m;
+  return tot >= 570 && tot < 960; // 9:30–16:00 ET
+}
+
+function minsToClose() {
+  const now = new Date();
+  const gr = new Date(now.toLocaleString('en-US',{timeZone:'Europe/Athens'}));
+  const tot = gr.getHours() * 60 + gr.getMinutes();
+  const close = 23 * 60;
+  return Math.max(0, close - tot);
+}
+
+function detectFlowSide(trade) {
+  if (trade.is_ask_side === true) return 'ASK';
+  if (trade.is_ask_side === false) return 'BID';
+  const s = (trade.side || trade.action || trade.transaction_side || '').toLowerCase();
+  if (s === 'ask' || s === 'buy' || s === 'bought') return 'ASK';
+  if (s === 'bid' || s === 'sell' || s === 'sold') return 'BID';
+  const sent = (trade.sentiment || '').toLowerCase();
+  if (sent === 'bullish') return trade.put_call === 'PUT' ? 'BID' : 'ASK';
+  if (sent === 'bearish') return trade.put_call === 'PUT' ? 'ASK' : 'BID';
+  return 'MID';
+}
+
+function getSentiment(trade) {
+  const side = detectFlowSide(trade);
+  const type = (trade.put_call || trade.option_type || '').toUpperCase();
+  if (type === 'CALL' && side === 'ASK') return 'BULLISH';
+  if (type === 'CALL' && side === 'BID') return 'BEARISH';
+  if (type === 'PUT' && side === 'ASK') return 'BEARISH';
+  if (type === 'PUT' && side === 'BID') return 'BULLISH';
+  return 'NEUTRAL';
+}
+
+// ==================== API CALLS ====================
+async function fetchTDQuote(ticker) {
+  if (!TD_KEY) return null;
+  try {
+    const r = await fetch(`https://api.twelvedata.com/quote?symbol=${ticker}&apikey=${TD_KEY}`);
+    const d = await r.json();
+    return d;
+  } catch { return null; }
+}
+
+function extractOpenAIText(data) {
+  if (!data) return '';
+  if (typeof data.output_text === 'string' && data.output_text.trim()) return data.output_text.trim();
+  const parts = [];
+  (data.output || []).forEach(item => {
+    (item.content || []).forEach(content => {
+      if (content.type === 'output_text' && content.text) parts.push(content.text);
+    });
+  });
+  return parts.join('\n').trim();
+}
+
+async function callClaude(prompt, maxTokens=4000, systemPrompt='') {
+  const key = window._CLAUDE_KEY || '';
+  const model = window._CLAUDE_MODEL || 'claude-sonnet-4-6';
+  if (!key) throw new Error('Δεν έχει οριστεί Claude API key.');
+
+  const body = {
+    model,
+    max_tokens: maxTokens,
+    messages: [{ role: 'user', content: prompt }]
+  };
+  if (systemPrompt) body.system = systemPrompt;
+
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify(body)
+  });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || d.error) throw new Error(d?.error?.message || `Claude HTTP ${r.status}`);
+  return d?.content?.filter(x => x.type === 'text').map(x => x.text).join('\n').trim() || '—';
+}
+
+async function callOpenAI(prompt, maxTokens=3500, instructions='') {
+  const key = window._OPENAI_KEY || '';
+  const model = window._OPENAI_MODEL || 'gpt-5.2';
+
+  let r;
+  try {
+    r = await fetch('/.netlify/functions/openai-proxy', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(key ? {'X-OpenAI-Key': key} : {}),
+      },
+      body: JSON.stringify({
+        model,
+        instructions: instructions || undefined,
+        input: prompt,
+        max_output_tokens: Math.max(100, Number(maxTokens) || 3500),
+      })
+    });
+  } catch (error) {
+    throw new Error(`Αποτυχία σύνδεσης με το Netlify OpenAI proxy: ${error.message}`);
+  }
+
+  const d = await r.json().catch(() => ({}));
+  if (r.status === 404) {
+    throw new Error('Δεν βρέθηκε η Netlify Function openai-proxy. Ανέβασε ολόκληρο το ZIP και όχι μόνο το index.html.');
+  }
+  if (!r.ok || d.error) {
+    const detail = d?.error?.message || d?.message || `OpenAI proxy HTTP ${r.status}`;
+    throw new Error(detail);
+  }
+  const text = extractOpenAIText(d);
+  if (!text) throw new Error('Το OpenAI API δεν επέστρεψε κείμενο. Δοκίμασε μεγαλύτερο max output ή άλλο διαθέσιμο model.');
+  return text;
+}
+
+// ==================== COMPONENTS ====================
+
+function TopBar({ clockGR, clockET, marketOpen, warnClose, minsLeft, onRefresh, refreshing, apiStatus, lightMode, onToggleLight }) {
+  return (
+    <div>
+      <div className="trial-bar">
+        <span>📊 Barchart CSV Import — κατέβασε Options Flow CSV και φόρτωσε παρακάτω.</span>
+        <span style={{color:'#ffaa0088'}}>Ενημερώνεται από Barchart Premier</span>
+      </div>
+      <div className="topbar">
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <div className="logo">▸ ETF SIGNAL TERMINAL <span style={{color:'#555',fontSize:8}}>v5</span></div>
+          <span className="dot" style={{width:6,height:6,borderRadius:'50%',background:marketOpen?'var(--green)':'var(--red)',display:'inline-block',animation:marketOpen?'pulse 2s infinite':'none'}}/>
+          <span style={{fontSize:9,color:'var(--muted)'}}>{marketOpen ? 'ΑΓΟΡΑ ΑΝΟΙΧΤΗ' : 'ΑΓΟΡΑ ΚΛΕΙΣΤΗ'}</span>
+          <span style={{fontSize:9,color:'var(--muted)'}}>GR: <span style={{color:'var(--text)'}}>{clockGR}</span></span>
+          <span style={{fontSize:9,color:'var(--muted)'}}>ET: <span style={{color:'var(--text)'}}>{clockET}</span></span>
+          {apiStatus.td && <span className="tb-pill pill-green">✓ TWELVE DATA</span>}
+          {apiStatus.claude && <span className="tb-pill pill-purple">✓ CLAUDE MAIN</span>}
+          {apiStatus.openai && <span className="tb-pill pill-cyan">✓ OPENAI 2nd</span>}
+          {!apiStatus.td && !apiStatus.claude && !apiStatus.openai && <span className="tb-pill pill-amber">⚠ DETERMINISTIC MODE — ⚙️ Settings για AI keys</span>}
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          {warnClose && <div className="warn-bar">⚠ ΚΛΕΙΣΕ CFD — {minsLeft}λ ΜΕΧΡΙ ΚΛΕΙΣΙΜΟ</div>}
+          <button onClick={onToggleLight} style={{
+            background:lightMode?'#1a1d23':'#fff8e6',
+            border:`1px solid ${lightMode?'#444':'#b87800'}`,
+            color:lightMode?'#e8e8e8':'#b87800',
+            fontFamily:'var(--font)',fontSize:11,padding:'3px 10px',
+            borderRadius:2,cursor:'pointer',letterSpacing:'.05em',transition:'all .2s'
+          }}>
+            {lightMode ? '🌙 DARK' : '☀️ LIGHT'}
+          </button>
+          <button className="btn btn-primary" onClick={onRefresh} disabled={refreshing}>
+            {refreshing ? '↻ ...' : '↻ REFRESH'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TickerCard({ ticker, data, onAddAlert }) {
+  if (!data) return (
+    <div className="tcard" style={{opacity:.4}}>
+      <div style={{fontSize:14,fontWeight:700,color:'var(--muted)'}}>{ticker}</div>
+      <div style={{fontSize:9,color:'var(--dim)',marginTop:4}}>Φόρτωση...</div>
+    </div>
+  );
+
+  const { price, change, vol, range, putFlow, callFlow, signals=[], type='bull', preChange } = data;
+  const isDivergence = signals.includes('DIVERGENCE');
+  const isWhale = signals.includes('WHALE');
+  const chClass = change >= 0 ? 'up' : 'down';
+  const chSign = change >= 0 ? '+' : '';
+  let cardClass = 'tcard';
+  if (isDivergence) cardClass += ' div-signal';
+  else if (isWhale) cardClass += ' whale-signal';
+
+  const signalPills = signals.map((s,i) => {
+    let cls = 'sp-warn';
+    if (s==='DIVERGENCE') cls='sp-div';
+    else if (s==='WHALE'||s==='WHALE FLOW') cls='sp-whale';
+    else if (s.includes('BEAR')||s.includes('HIGH VOL')) cls='sp-bear';
+    else if (s.includes('BULL')) cls='sp-bull';
+    return <span key={i} className={`sp ${cls}`}>{s}</span>;
+  });
+
+  return (
+    <div className={cardClass}>
+      {isDivergence && <div className="tcard-badge badge-div">⚡ DIVERGENCE</div>}
+      {!isDivergence && isWhale && <div className="tcard-badge badge-whale">🐋 WHALE</div>}
+      <div className="trow">
+        <div>
+          <span className={`tname ${type}`}>{ticker}</span>
+          <span style={{fontSize:8,color:'var(--muted)',marginLeft:4}}>3X {type==='bull'?'BULL':'BEAR'}</span>
+          {data.liveUpdated && <span style={{fontSize:7,color:'var(--green)',marginLeft:5,letterSpacing:'.05em'}}>● LIVE</span>}
+        </div>
+        <div>
+          <span className="tprice">{fmt(price)}</span>
+          <span className={`tchange ${chClass}`}>{chSign}{fmt(change,2)}%</span>
+        </div>
+      </div>
+      {preChange != null && (
+        <div style={{fontSize:9,color:'var(--muted)',marginBottom:4}}>
+          Pre-mkt: <span className={preChange>=0?'up':'down'}>{preChange>=0?'+':''}{fmt(preChange,2)}%</span>
+        </div>
+      )}
+      <div className="tmeta">
+        <div><div className="ml">VOLUME</div><div className="mv">{vol||'—'}</div></div>
+        <div><div className="ml">RANGE</div><div className="mv" style={{fontSize:9}}>{range||'—'}</div></div>
+        <div><div className="ml">PUT/CALL</div><div className={`mv ${putFlow>60?'down':callFlow>60?'up':'neutral'}`}>{putFlow}/{callFlow}</div></div>
+      </div>
+      <div className="fbar">
+        <span className="fl" style={{color:'var(--red)'}}>PUT</span>
+        <div className="ft"><div className="ff-put" style={{width:putFlow+'%'}}/></div>
+        <span className="fp down">{putFlow}%</span>
+      </div>
+      <div className="fbar">
+        <span className="fl" style={{color:'var(--green)'}}>CALL</span>
+        <div className="ft"><div className="ff-call" style={{width:callFlow+'%'}}/></div>
+        <span className="fp up">{callFlow}%</span>
+      </div>
+      <div className="srow">{signalPills}</div>
+    </div>
+  );
+}
+
+function FlowTable({ trades }) {
+  if (!trades || trades.length === 0) return (
+    <div style={{fontSize:9,color:'var(--dim)',padding:'12px 0'}}>Δεν υπάρχουν flow data — ανέβασε CSV από Barchart (OPTIONS FLOW tab).</div>
+  );
+  return (
+    <table className="ftable">
+      <thead>
+        <tr>
+          <th>TICKER</th><th>TYPE</th><th>SIDE</th><th>SENTIMENT</th>
+          <th>STRIKE</th><th>EXP</th><th>PREMIUM</th><th>DTE</th>
+        </tr>
+      </thead>
+      <tbody>
+        {trades.map((t, i) => {
+          const type = (t.put_call || t.option_type || '').toUpperCase();
+          const side = detectFlowSide(t);
+          const sent = getSentiment(t);
+          const prem = t.total_premium || t.premium || 0;
+          const isImportant = t.size > (t.open_interest || 0);
+          return (
+            <tr key={i}>
+              <td className="prem">{t.ticker_symbol || t.ticker || '—'}</td>
+              <td className={type==='PUT'?'type-put':'type-call'}>{type||'—'}</td>
+              <td className={side==='ASK'?'side-ask':side==='BID'?'side-bid':'side-mid'}>{side}</td>
+              <td className={sent==='BULLISH'?'sent-bull':'sent-bear'}>{sent}</td>
+              <td>${t.strike_price || t.strike || '—'}</td>
+              <td>{t.expiry_date || t.expiration || '—'}</td>
+              <td className={isImportant?'star':'prem'}>{fmtK(prem)}{isImportant?' ★':''}</td>
+              <td style={{color:'var(--muted)'}}>{t.dte||'—'}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+
+function BuffettScanner({ tdKey }) {
+  const [maxPrice, setMaxPrice] = useState(10);
+  const [results, setResults] = useState([
+    { ticker:'DLHC', icon:'👤', tag:'INSIDER', price:'$5.25', desc:'Mink Brook Asset Management (10%+ owner) - multiple open-market buys · June 16–July 2, 2026', watching:false },
+    { ticker:'PALI', icon:'👤', tag:'INSIDER', price:'$2.04', desc:'Director Robert Baltera Jr. - open market purchase of 30,000 shares · July 1–2, 2026', watching:false },
+    { ticker:'MBLY', icon:'🐋', tag:'WHALE', price:'$8.04', desc:'Unusual call options surge: 26,298 call contracts vs 1,135 puts (23:1 ratio) · July 1–2, 2026', watching:false },
+    { ticker:'PLUG', icon:'🐋', tag:'WHALE', price:'$2.85', desc:'Unusual call options: 68,127 calls (+31% above avg volume) · April 6, 2026', watching:false },
+    { ticker:'SHLS', icon:'📊', tag:'VOLUME', price:'$4.75', desc:'Shoals Technologies – unusually high volume on utility-scale solar demand surge · Q2 2026', watching:false },
+    { ticker:'NWL', icon:'🏛️', tag:'CONGRESS', price:'$7.20', desc:'Rep. Pete Stauber (R-MN) – purchased shares · Fall 2025', watching:false },
+    { ticker:'ALTO', icon:'📊', tag:'VOLUME', price:'$4.50', desc:'Alto Ingredients – 425% run in 12 months, high volume on earnings beat · March 2026', watching:false },
+  ]);
+  const [scanning, setScanning] = useState(false);
+
+  const tagClass = { INSIDER:'btag-insider', WHALE:'btag-whale', CONGRESS:'btag-congress', VOLUME:'btag-vol' };
+
+  async function scan() {
+    setScanning(true);
+    try {
+      // Phase 1: ask Claude for tickers only (no prices/names to avoid fabrication)
+      const p1 = await callClaude(`Βρες μετοχές που πληρούν ΟΛΑ αυτά: τιμή κάτω από $${maxPrice}, παρουσία insider buying ή congressional trades ή unusual whale activity το 2026. Επέστρεψε μόνο JSON array με tickers: ["TICK1","TICK2",...] — τίποτε άλλο.`, 500);
+      let tickers = [];
+      try { tickers = JSON.parse(p1.replace(/```json|```/g,'')); } catch {}
+
+      // Phase 2: verify with TD
+      const verified = [];
+      for (const t of tickers.slice(0,10)) {
+        if (!tdKey) { verified.push({ ticker:t, price:'—', verified:false }); continue; }
+        const q = await fetchTDQuote(t);
+        if (q && q.close && parseFloat(q.close) <= maxPrice) {
+          verified.push({ ticker:t, price:`$${parseFloat(q.close).toFixed(2)}`, verified:true });
+        }
+      }
+      if (verified.length > 0) {
+        const newResults = verified.map(v => ({
+          ticker: v.ticker, icon:'🔍', tag:'INSIDER', price: v.price,
+          desc: v.verified ? 'Verified via Twelve Data' : '⚠ UNVERIFIED — έλεγξε μόνος σου',
+          watching: false
+        }));
+        setResults(newResults);
+      }
+    } catch(e) { console.error(e); }
+    setScanning(false);
+  }
+
+  function toggleWatch(i) {
+    setResults(r => r.map((item, idx) => idx===i ? {...item, watching: !item.watching} : item));
+  }
+
+  return (
+    <div>
+      <div style={{fontSize:9,color:'var(--muted)',marginBottom:10,lineHeight:1.6}}>
+        Βρες μικρές μετοχές που αγοράζουν πολιτικοί, insiders ή whales — η στρατηγική Buffett για ανακάλυψη αξίας σε μετοχές που «περνούν απαρατήρητες».
+      </div>
+      <div className="scan-controls">
+        <span style={{fontSize:9,color:'var(--muted)'}}>MAX ΤΙΜΗ $</span>
+        <input type="number" value={maxPrice} onChange={e=>setMaxPrice(e.target.value)} min="1" max="50"/>
+        <button className="btn btn-ai" onClick={scan} disabled={scanning}>
+          {scanning ? '⟳ Σάρωση...' : '🔍 Σάρωση με AI'}
+        </button>
+        <span style={{fontSize:8,color:'var(--dim)'}}>{results.length} αποτελέσματα</span>
+      </div>
+      {results.map((r,i) => (
+        <div key={i} className="bitem">
+          <div className="bicon">{r.icon}</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',flexWrap:'wrap',gap:4}}>
+              <span className="bticker">{r.ticker}</span>
+              <span className="bprice">{r.price}</span>
+              <span className={`btag ${tagClass[r.tag]||'btag-vol'}`}>{r.tag}</span>
+              <span className="btag btag-unver">⚠ UNVERIFIED</span>
+            </div>
+            <div className="bdesc">{r.desc}</div>
+            <button className={`bwatch ${r.watching?'watching':''}`} onClick={()=>toggleWatch(i)}>
+              {r.watching ? '★ Watching' : 'Watch'}
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function AIPanel({ tickerData, flowTrades }) {
+  const [analysis, setAnalysis] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState('signal'); // signal | trade | risk
+
+  async function runAnalysis() {
+    setLoading(true);
+    setAnalysis('');
+    try {
+      const tickerSummary = Object.entries(tickerData).map(([t,d]) =>
+        `${t}: price=${d?.price||'—'} change=${d?.change||'—'}% vol=${d?.vol||'—'} putFlow=${d?.putFlow||0}% callFlow=${d?.callFlow||0}% signals=${(d?.signals||[]).join(',')}`
+      ).join('\n');
+
+      const flowSummary = flowTrades.slice(0,15).map(t => {
+        const side = detectFlowSide(t);
+        const sent = getSentiment(t);
+        const type = (t.put_call||t.option_type||'').toUpperCase();
+        return `${t.ticker_symbol||t.ticker}: ${type} ${side} → ${sent} | strike $${t.strike_price||'—'} exp ${t.expiry_date||'—'} premium ${fmtK(t.total_premium||0)}`;
+      }).join('\n');
+
+      const prompts = {
+        signal: `Είσαι expert options flow analyst. Ανάλυσε αυτά τα δεδομένα για intraday trading (SOXL/SOXS/NAIL focus):
+
+TICKERS:\n${tickerSummary}
+
+OPTIONS FLOW:\n${flowSummary}
+
+Δώσε:
+1. 🎯 TOP SIGNAL (το πιο actionable setup σήμερα)
+2. ⚡ DIVERGENCE ανίχνευση (τιμή ↑ + puts ↑ ή αντίστροφο)
+3. 🐋 WHALE activity highlights
+4. ⚠️ MACRO risk factors
+5. 📋 TRADE PLAN: Entry zone, stop, target για SOXL ή SOXS
+
+Να είσαι συγκεκριμένος με αριθμούς. Χωρίς γενικολογίες.`,
+        trade: `Ανάλυσε για intraday CFD trade (eToro, SOXL/SOXS/NAIL):
+
+${tickerSummary}
+
+Δώσε structured trade plan:
+- Direction (LONG/SHORT)
+- Entry price zone
+- Stop loss (strict)
+- Target 1 και Target 2
+- Risk/Reward ratio
+- Confidence level (1-10)
+- Γιατί ΑΥΤΗ η κίνηση ΤΩΡΑ
+
+Βάση budget: €16-500 compound strategy.`,
+        risk: `Risk assessment για σήμερα:
+
+${tickerSummary}
+${flowSummary}
+
+1. Macro risks (geopolitical, sector)
+2. Liquidity risk (spread CFD eToro)
+3. Overnight risk αν μείνει ανοιχτή θέση
+4. Max recommended exposure σε % κεφαλαίου
+5. Exit conditions (πότε να βγεις ΑΜΕΣΩΣ)`
+      };
+
+      const result = await callClaude(prompts[mode], 8000);
+      setAnalysis(result);
+    } catch(e) {
+      setAnalysis('Error: ' + e.message);
+    }
+    setLoading(false);
+  }
+
+  return (
+    <div>
+      <div style={{display:'flex',gap:6,marginBottom:10,flexWrap:'wrap'}}>
+        {[['signal','🎯 Signals'],['trade','📋 Trade Plan'],['risk','⚠️ Risk']].map(([k,l])=>(
+          <button key={k} className={`btn ${mode===k?'btn-ai':''}`} onClick={()=>setMode(k)}>{l}</button>
+        ))}
+        <button className="btn btn-ai" onClick={runAnalysis} disabled={loading} style={{marginLeft:'auto'}}>
+          {loading ? '⟳ Ανάλυση...' : '▸ RUN AI ANALYSIS'}
+        </button>
+      </div>
+      {loading ? (
+        <div className="ai-loading">
+          <div className="ai-dot"/><div className="ai-dot"/><div className="ai-dot"/>
+          <span>Claude αναλύει {mode === 'signal' ? 'signals' : mode === 'trade' ? 'trade setup' : 'risks'}...</span>
+        </div>
+      ) : analysis ? (
+        <div className="ai-output">{analysis}</div>
+      ) : (
+        <div style={{fontSize:9,color:'var(--dim)',padding:'20px 0',textAlign:'center'}}>
+          Πάτα «RUN AI ANALYSIS» για να πάρεις ανάλυση βάσει των live signals
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Sidebar({ capital, trades, onLogTrade, alerts }) {
+  const [form, setForm] = useState({ ticker:'SOXL', dir:'LONG', entry:'', exit:'', amount:'' });
+  const totalPnL = trades.reduce((s,t)=>s+t.pnl,0);
+  const wins = trades.filter(t=>t.pnl>0).length;
+  const winRate = trades.length > 0 ? Math.round(wins/trades.length*100) : null;
+  const bestTrade = trades.length > 0 ? Math.max(...trades.map(t=>t.pnl)) : null;
+
+  const stepIdx = STEPS.findIndex(s => capital < s);
+  const prev = STEPS[Math.max(0,stepIdx-1)];
+  const next = STEPS[Math.min(STEPS.length-1, stepIdx)] || STEPS[STEPS.length-1];
+  const pct = Math.min(100, ((capital - prev) / (next - prev)) * 100) || 2;
+  const minsLeft = minsToClose();
+  const showWarn = minsLeft > 0 && minsLeft <= 20;
+
+  function submit() {
+    const e = parseFloat(form.entry), x = parseFloat(form.exit), a = parseFloat(form.amount);
+    if (!e || !x || !a) return;
+    const pctC = form.dir==='LONG' ? (x-e)/e : (e-x)/e;
+    onLogTrade({ ticker:form.ticker, dir:form.dir, entry:e, exit:x, amount:a, pnl:a*pctC, pctChange:pctC, time:now_gr() });
+    setForm(f=>({...f,entry:'',exit:'',amount:''}));
+  }
+
+  return (
+    <div className="sidebar">
+      {showWarn && (
+        <div className="overnight-box">
+          <div className="ow-title">⚠ ΚΛΕΙΣΕ CFD ΤΩΡΑ</div>
+          <div className="ow-msg">{minsLeft} λεπτά μέχρι κλείσιμο (23:00 GR).<br/>Overnight financing = απώλεια κεφαλαίου.</div>
+        </div>
+      )}
+
+      {/* COMPOUND */}
+      <div className="sbox">
+        <div className="stitle">COMPOUND TRACKER</div>
+        <div className="compound-num">€{capital.toFixed(2)}</div>
+        <div style={{fontSize:8,color:'var(--muted)',marginTop:2}}>ΤΡΕΧΟΝ ΚΕΦΑΛΑΙΟ</div>
+        <div className="cprog"><div className="cpfill" style={{width:Math.max(2,pct)+'%'}}/></div>
+        <div className="csteps">
+          {STEPS.slice(0,6).map((s,i)=>(
+            <span key={i} className={capital>=s?'csdone':''}>{s>=1000?'€'+(s/1000)+'K':'€'+s}</span>
+          ))}
+        </div>
+        <div style={{marginTop:6,fontSize:9,color:'var(--muted)'}}>
+          Στόχος: <span style={{color:'var(--amber)'}}>€{(capital*1.7).toFixed(2)}</span> (+70%)
+          <span style={{color:'var(--dim)',marginLeft:8}}>→ €{next>=1000?'€'+(next/1000)+'K':'€'+next}</span>
+        </div>
+      </div>
+
+      {/* LOG TRADE */}
+      <div className="sbox">
+        <div className="stitle">LOG TRADE</div>
+        <div className="tform">
+          <select value={form.ticker} onChange={e=>setForm(f=>({...f,ticker:e.target.value}))}>
+            {['SOXL','SOXS','NAIL','TQQQ','TECL','OTHER'].map(t=><option key={t}>{t}</option>)}
+          </select>
+          <select value={form.dir} onChange={e=>setForm(f=>({...f,dir:e.target.value}))}>
+            <option value="LONG">LONG ▲</option>
+            <option value="SHORT">SHORT ▼</option>
+          </select>
+          <input placeholder="Entry €" type="number" value={form.entry} onChange={e=>setForm(f=>({...f,entry:e.target.value}))} step="0.01"/>
+          <input placeholder="Exit €" type="number" value={form.exit} onChange={e=>setForm(f=>({...f,exit:e.target.value}))} step="0.01"/>
+          <input placeholder="Ποσό €" type="number" value={form.amount} onChange={e=>setForm(f=>({...f,amount:e.target.value}))} step="0.01" className="tform-full"/>
+          <button className="btn-log" onClick={submit}>+ ΚΑΤΑΧΩΡΗΣΗ</button>
+        </div>
+        <div className="etoro-note" style={{marginTop:8}}>
+          <span>eToro CFD:</span> Κλείσε θέσεις πριν <span>22:40 GR</span>. Spread + financing βαρύνουν μικρά κεφάλαια.
+        </div>
+      </div>
+
+      {/* P&L */}
+      <div className="sbox">
+        <div className="stitle">P&L ΣΗΜΕΡΑ</div>
+        <div className={`pnl-big ${totalPnL>=0?'up':'down'}`}>{totalPnL>=0?'+':''}€{Math.abs(totalPnL).toFixed(2)}</div>
+        <div style={{fontSize:9,color:'var(--muted)',marginTop:3}}>{trades.length} trades</div>
+        <div className="pnl-grid">
+          <div><div className="pstat-l">WIN RATE</div><div className={`pstat-v ${winRate>=50?'up':'down'}`}>{winRate!=null?winRate+'%':'—'}</div></div>
+          <div><div className="pstat-l">BEST TRADE</div><div className="pstat-v up">{bestTrade!=null?'+€'+bestTrade.toFixed(2):'—'}</div></div>
+        </div>
+      </div>
+
+      {/* TRADE LOG */}
+      {trades.length > 0 && (
+        <div className="sbox">
+          <div className="stitle">TRADE LOG</div>
+          {[...trades].reverse().map((t,i)=>(
+            <div key={i} className="tlog-item">
+              <div><div className="tl-ticker">{t.ticker}</div><div className="tl-dir">{t.dir} · {t.time}</div></div>
+              <div style={{textAlign:'right'}}>
+                <div className={t.pnl>=0?'up':'down'}>{t.pnl>=0?'+':''}€{Math.abs(t.pnl).toFixed(2)}</div>
+                <div style={{fontSize:9,color:'var(--muted)'}}>{(t.pctChange*100).toFixed(1)}%</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ALERTS */}
+      <div className="stitle">LIVE ALERTS</div>
+      <div>
+        {alerts.map((a,i)=>(
+          <div key={i} className={`alert-item ${a.type}`}>
+            <div className="alert-time">{a.time}</div>
+            <div>{a.msg}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ==================== BIG MOVE DETECTOR ====================
+
+// 3x ETFs that can make life-changing moves
+const BIG_MOVE_UNIVERSE = [
+  { ticker:'SOXL', name:'Semiconductors Bull 3x', sector:'Semis', atl:6.0, ath:302, current:169, bias:'BULL' },
+  { ticker:'SOXS', name:'Semiconductors Bear 3x', sector:'Semis', atl:3.17, ath:169.8, current:4.62, bias:'BEAR' },
+  { ticker:'NAIL', name:'Homebuilders Bull 3x', sector:'Housing', atl:2.1, ath:110, current:31.2, bias:'BULL' },
+  { ticker:'TQQQ', name:'Nasdaq 100 Bull 3x', sector:'Tech', atl:17, ath:91, current:72, bias:'BULL' },
+  { ticker:'LABU', name:'Biotech Bull 3x', sector:'Biotech', atl:0.84, ath:380, current:322, bias:'BULL' },
+  { ticker:'TECL', name:'Technology Bull 3x', sector:'Tech', atl:12, ath:310, current:190, bias:'BULL' },
+  { ticker:'FAS', name:'Financials Bull 3x', sector:'Finance', atl:8, ath:150, current:128, bias:'BULL' },
+  { ticker:'UDOW', name:'Dow Jones Bull 3x', sector:'Broad', atl:9, ath:110, current:98, bias:'BULL' },
+  { ticker:'ERX', name:'Energy Bull 2x', sector:'Energy', atl:3, ath:84, current:55, bias:'BULL' },
+  { ticker:'FNGU', name:'FANG+ Bull 3x', sector:'MegaCap', atl:1.2, ath:75, current:27, bias:'BULL' },
+  { ticker:'DPST', name:'Regional Banks Bull 3x', sector:'Banks', atl:4, ath:180, current:68, bias:'BULL' },
+  { ticker:'WANT', name:'Consumer Disc Bull 3x', sector:'Consumer', atl:5, ath:95, current:42, bias:'BULL' },
+];
+
+const MACRO_CATALYSTS = [
+  { name:'Fed Rate Cut', impact:'BULL', affected:['SOXL','TQQQ','NAIL','FAS'], probability:'MEDIUM', timeframe:'Q3-Q4 2026' },
+  { name:'Semiconductors AI Supercycle', impact:'BULL', affected:['SOXL','TECL','FNGU'], probability:'HIGH', timeframe:'2026-2027' },
+  { name:'Housing Recovery', impact:'BULL', affected:['NAIL'], probability:'LOW', timeframe:'2027' },
+  { name:'Iran Conflict Escalation', impact:'BEAR', affected:['SOXL','TQQQ','TECL'], probability:'MEDIUM', timeframe:'NEAR TERM' },
+  { name:'Biotech FDA Approvals Wave', impact:'BULL', affected:['LABU'], probability:'MEDIUM', timeframe:'H2 2026' },
+  { name:'Regional Bank Stress', impact:'BEAR', affected:['FAS','DPST'], probability:'LOW', timeframe:'2026' },
+];
+
+function BigMoveDetector({ onAddAlert }) {
+  const [aiAnalysis, setAiAnalysis] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [filter, setFilter] = useState('ALL'); // ALL | OVERSOLD | NEAR_ATL | BULL | BEAR
+  const [watching, setWatching] = useState({});
+
+  // Calculate key metrics per ETF
+  function getMetrics(etf) {
+    const fromAtl = ((etf.current - etf.atl) / etf.atl) * 100;
+    const fromAth = ((etf.ath - etf.current) / etf.ath) * 100;
+    const atlMultiple = etf.current / etf.atl;
+    const athMultiple = etf.ath / etf.current;
+    const potentialFromHere = ((etf.ath - etf.current) / etf.current) * 100;
+
+    let status = 'NEUTRAL';
+    let statusColor = 'var(--muted)';
+    if (fromAtl < 100) { status = '🔥 NEAR ATL'; statusColor = 'var(--red)'; }
+    else if (fromAtl < 300) { status = '⚡ OVERSOLD'; statusColor = 'var(--amber)'; }
+    else if (fromAth < 20) { status = '🏔 NEAR ATH'; statusColor = 'var(--green)'; }
+    else { status = '📊 MID RANGE'; statusColor = 'var(--muted)'; }
+
+    return { fromAtl, fromAth, atlMultiple, athMultiple, potentialFromHere, status, statusColor };
+  }
+
+  const filtered = BIG_MOVE_UNIVERSE.filter(e => {
+    if (filter === 'ALL') return true;
+    const m = getMetrics(e);
+    if (filter === 'OVERSOLD') return m.fromAtl < 300;
+    if (filter === 'NEAR_ATL') return m.fromAtl < 150;
+    if (filter === 'BULL') return e.bias === 'BULL';
+    if (filter === 'BEAR') return e.bias === 'BEAR';
+    return true;
+  }).sort((a,b) => getMetrics(a).fromAtl - getMetrics(b).fromAtl);
+
+  async function runAI() {
+    setAiLoading(true);
+    setAiAnalysis('');
+    try {
+      const etfSummary = BIG_MOVE_UNIVERSE.map(e => {
+        const m = getMetrics(e);
+        return `${e.ticker} (${e.sector}): ATL=$${e.atl} current=$${e.current} ATH=$${e.ath} | from ATL: +${m.fromAtl.toFixed(0)}% | upside to ATH: +${m.potentialFromHere.toFixed(0)}% | status: ${m.status}`;
+      }).join('\n');
+
+      const catalysts = MACRO_CATALYSTS.map(c =>
+        `${c.name}: ${c.impact} | prob: ${c.probability} | affects: ${c.affected.join(',')} | timeframe: ${c.timeframe}`
+      ).join('\n');
+
+      const prompt = `Είσαι expert σε 3x leveraged ETFs. Έχεις δει SOXL να πάει από $6 → $302, πετρέλαιο με leverage $9 → $140.
+
+CURRENT 3x ETF UNIVERSE:
+${etfSummary}
+
+MACRO CATALYSTS 2026:
+${catalysts}
+
+Ανάλυσε:
+1. 🚀 TOP 3 "LIFE-CHANGING TRADE" SETUPS — ποια 3x ETF έχει το καλύτερο risk/reward τώρα για μεγάλη κίνηση (όχι intraday, swing/position)
+2. ⚡ INTRADAY SETUP ΣΗΜΕΡΑ — ποιο έχει το καλύτερο setup για intraday με $16-500 κεφάλαιο
+3. 📍 ENTRY ZONES — συγκεκριμένες τιμές για κάθε top pick
+4. ⚠️ RISKS — τι μπορεί να πάει λάθος
+5. 🎯 THE BIG PICTURE — αν έπρεπε να βάλεις €500 σε ένα 3x ETF για 6-12 μήνες, ποιο και γιατί;
+
+Να είσαι bold και συγκεκριμένος. Όχι disclaimers.`;
+
+      const result = await callClaude(prompt, 8000);
+      setAiAnalysis(result);
+      onAddAlert('div', '🚀 Big Move AI Analysis ολοκληρώθηκε');
+    } catch(e) { setAiAnalysis('Error: ' + e.message); }
+    setAiLoading(false);
+  }
+
+  function toggleWatch(ticker) {
+    setWatching(w => ({ ...w, [ticker]: !w[ticker] }));
+  }
+
+  // Historical examples για inspiration
+  const EXAMPLES = [
+    { what:'SOXL', from:'$6', to:'$302', when:'2024→2026', x:'50x', catalyst:'AI chip supercycle' },
+    { what:'Crude Oil 10x', from:'$9', to:'$140', when:'2020→2022', x:'155x', catalyst:'Post-COVID demand' },
+    { what:'NAIL', from:'$2.1', to:'$110', when:'2020→2022', x:'52x', catalyst:'Housing boom' },
+    { what:'TQQQ', from:'$17', to:'$91', when:'2022→2024', x:'5.3x', catalyst:'AI rally' },
+    { what:'LABU', from:'$0.84', to:'$380', when:'2020→2022', x:'452x', catalyst:'Biotech/mRNA wave' },
+  ];
+
+  return (
+    <div>
+      {/* HEADER */}
+      <div style={{background:'#0d0018',border:'1px solid #2a0044',borderRadius:4,padding:'12px 14px',marginBottom:14}}>
+        <div style={{fontSize:11,color:'var(--purple)',fontWeight:700,letterSpacing:'.1em',marginBottom:6}}>🚀 BIG MOVE DETECTOR — Life-Changing Trades</div>
+        <div style={{fontSize:9,color:'var(--muted)',lineHeight:1.7}}>
+          SOXL $6→$302 · Crude Oil 10x $9→$140 · NAIL $2→$110 · LABU $0.84→$380<br/>
+          Ψάχνει 3x ETFs που είναι <span style={{color:'var(--amber)'}}>κοντά στο ATL</span> ή έχουν <span style={{color:'var(--green)'}}>μεγάλο upside</span> σε macro reversal.
+        </div>
+      </div>
+
+      {/* HISTORICAL EXAMPLES */}
+      <div style={{marginBottom:14}}>
+        <div className="section-lbl">ΙΣΤΟΡΙΚΑ ΠΑΡΑΔΕΙΓΜΑΤΑ — Τι είναι εφικτό</div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:6}}>
+          {EXAMPLES.map((e,i) => (
+            <div key={i} style={{background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:3,padding:'8px 9px'}}>
+              <div style={{fontSize:11,fontWeight:700,color:'var(--amber)'}}>{e.what}</div>
+              <div style={{fontSize:13,fontWeight:700,color:'var(--green)',margin:'3px 0'}}>{e.x}</div>
+              <div style={{fontSize:9,color:'var(--text)'}}>{e.from} → {e.to}</div>
+              <div style={{fontSize:8,color:'var(--muted)',marginTop:2}}>{e.when}</div>
+              <div style={{fontSize:8,color:'var(--purple)',marginTop:3}}>{e.catalyst}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* FILTERS + AI */}
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10,flexWrap:'wrap'}}>
+        <div className="section-lbl" style={{marginBottom:0}}>FILTER:</div>
+        {[['ALL','Όλα'],['NEAR_ATL','🔥 Κοντά ATL'],['OVERSOLD','⚡ Oversold'],['BULL','▲ Bull'],['BEAR','▼ Bear']].map(([k,l])=>(
+          <button key={k} className={`btn ${filter===k?'btn-primary':''}`} onClick={()=>setFilter(k)} style={{fontSize:9}}>{l}</button>
+        ))}
+        <button className="btn btn-ai" onClick={runAI} disabled={aiLoading} style={{marginLeft:'auto'}}>
+          {aiLoading ? '⟳ AI Ανάλυση...' : '🤖 AI: Βρες το επόμενο SOXL $6'}
+        </button>
+      </div>
+
+      {/* ETF GRID */}
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:7,marginBottom:14}}>
+        {filtered.map((etf,i) => {
+          const m = getMetrics(etf);
+          const isWatching = watching[etf.ticker];
+          return (
+            <div key={i} style={{
+              background:'var(--bg2)',
+              border:`1px solid ${m.fromAtl < 150 ? 'var(--red)' : m.fromAtl < 300 ? '#442200' : 'var(--border2)'}`,
+              borderRadius:4,padding:'10px 11px',position:'relative'
+            }}>
+              {m.fromAtl < 150 && (
+                <div style={{position:'absolute',top:0,right:0,background:'var(--red)',color:'#000',fontSize:8,fontWeight:700,padding:'2px 6px',borderRadius:'0 3px 0 3px'}}>
+                  🔥 NEAR ATL
+                </div>
+              )}
+              <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:5}}>
+                <div>
+                  <span style={{fontSize:14,fontWeight:700,color:etf.bias==='BULL'?'var(--green)':'var(--red)'}}>{etf.ticker}</span>
+                  <span style={{fontSize:8,color:'var(--muted)',marginLeft:5}}>{etf.sector}</span>
+                </div>
+                <span style={{fontSize:16,fontWeight:700}}>${etf.current}</span>
+              </div>
+
+              <div style={{fontSize:8,color:'var(--muted)',marginBottom:6}}>{etf.name}</div>
+
+              {/* ATL → Current → ATH bar */}
+              <div style={{marginBottom:7}}>
+                <div style={{display:'flex',justifyContent:'space-between',fontSize:8,color:'var(--muted)',marginBottom:3}}>
+                  <span style={{color:'var(--red)'}}>ATL ${etf.atl}</span>
+                  <span style={{color:'var(--muted)'}}>CURRENT</span>
+                  <span style={{color:'var(--green)'}}>ATH ${etf.ath}</span>
+                </div>
+                <div style={{height:5,background:'var(--border2)',borderRadius:3,position:'relative',overflow:'hidden'}}>
+                  <div style={{
+                    position:'absolute',left:0,top:0,height:'100%',
+                    width: Math.min(100, ((etf.current - etf.atl) / (etf.ath - etf.atl)) * 100) + '%',
+                    background: m.fromAtl < 150 ? 'var(--red)' : m.fromAtl < 400 ? 'var(--amber)' : 'var(--green)',
+                    borderRadius:3
+                  }}/>
+                </div>
+              </div>
+
+              {/* Key metrics */}
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:4,marginBottom:7}}>
+                <div>
+                  <div style={{fontSize:8,color:'var(--muted)'}}>ΑΠΟ ATL</div>
+                  <div style={{fontSize:11,color:m.fromAtl<200?'var(--amber)':'var(--muted)'}}>+{m.fromAtl.toFixed(0)}%</div>
+                </div>
+                <div>
+                  <div style={{fontSize:8,color:'var(--muted)'}}>UPSIDE ΩΣ ATH</div>
+                  <div style={{fontSize:11,color:'var(--green)'}}>+{m.potentialFromHere.toFixed(0)}%</div>
+                </div>
+                <div>
+                  <div style={{fontSize:8,color:'var(--muted)'}}>ATL MULTIPLE</div>
+                  <div style={{fontSize:11,color:'var(--purple)'}}>×{m.atlMultiple.toFixed(1)}</div>
+                </div>
+                <div>
+                  <div style={{fontSize:8,color:'var(--muted)'}}>ATH MULTIPLE</div>
+                  <div style={{fontSize:11,color:'var(--cyan)'}}>×{m.athMultiple.toFixed(1)}</div>
+                </div>
+              </div>
+
+              {/* €16 → ? calculator */}
+              <div style={{background:'#0a0a0a',border:'1px solid var(--border)',borderRadius:2,padding:'5px 7px',marginBottom:7,fontSize:9}}>
+                <span style={{color:'var(--muted)'}}>€16 → ATH = </span>
+                <span style={{color:'var(--green)',fontWeight:700}}>€{(16 * m.athMultiple).toFixed(0)}</span>
+                <span style={{color:'var(--dim)',marginLeft:6}}>| €500 → </span>
+                <span style={{color:'var(--amber)',fontWeight:700}}>€{(500 * m.athMultiple).toFixed(0)}</span>
+              </div>
+
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                <span style={{fontSize:9,color:m.statusColor}}>{m.status}</span>
+                <button
+                  onClick={()=>toggleWatch(etf.ticker)}
+                  style={{background:'transparent',border:`1px solid ${isWatching?'var(--green)':'var(--border3)'}`,color:isWatching?'var(--green)':'var(--muted)',fontSize:9,padding:'2px 8px',borderRadius:2,cursor:'pointer'}}
+                >
+                  {isWatching ? '★ Watching' : 'Watch'}
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* MACRO CATALYSTS */}
+      <div style={{marginBottom:14}}>
+        <div className="section-lbl">MACRO CATALYSTS — Τι θα κινήσει τα 3x ETFs</div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:6}}>
+          {MACRO_CATALYSTS.map((c,i) => (
+            <div key={i} style={{
+              background:'var(--bg2)',
+              border:`1px solid ${c.impact==='BULL'?'#003318':c.impact==='BEAR'?'#330000':'var(--border2)'}`,
+              borderRadius:3,padding:'8px 10px'
+            }}>
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+                <span style={{fontSize:10,fontWeight:700,color:'var(--text)'}}>{c.name}</span>
+                <span className={`sp ${c.impact==='BULL'?'sp-bull':'sp-bear'}`}>{c.impact}</span>
+              </div>
+              <div style={{fontSize:8,color:'var(--muted)',marginBottom:4}}>
+                {c.affected.map(t=><span key={t} style={{color:'var(--amber)',marginRight:5}}>{t}</span>)}
+              </div>
+              <div style={{display:'flex',justifyContent:'space-between',fontSize:8}}>
+                <span style={{color:c.probability==='HIGH'?'var(--green)':c.probability==='MEDIUM'?'var(--amber)':'var(--muted)'}}>
+                  {c.probability} PROB
+                </span>
+                <span style={{color:'var(--muted)'}}>{c.timeframe}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* TODAY'S INTRADAY SETUP */}
+      <div style={{marginBottom:14}}>
+        <div className="section-lbl">ΣΗΜΕΡΑ — Intraday Setup (16:30-23:00 GR)</div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:7}}>
+          {[
+            { ticker:'SOXL', setup:'PULLBACK ENTRY', signal:'Gap down -3.80% open → intraday recovery +3.85%', entry:'$165-168', stop:'$158', target1:'$175', target2:'$185', r2r:'1:2', conf:7, color:'var(--green)' },
+            { ticker:'SOXS', setup:'CONTRA PLAY', signal:'Inverse move — αν SOXL αδυνατεί να κρατήσει $170', entry:'$4.70-4.90', stop:'$4.40', target1:'$5.50', target2:'$6.20', r2r:'1:2.5', conf:5, color:'var(--red)' },
+            { ticker:'NAIL', setup:'SHORT SETUP', signal:'-10% σήμερα — housing sector weakness, high put flow', entry:'Αν bounce στο $31.50-32', stop:'$33', target1:'$29', target2:'$27', r2r:'1:3', conf:6, color:'var(--amber)' },
+          ].map((s,i) => (
+            <div key={i} style={{background:'var(--bg2)',border:`1px solid ${s.color}33`,borderRadius:4,padding:'10px 11px'}}>
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:5}}>
+                <span style={{fontSize:13,fontWeight:700,color:s.color}}>{s.ticker}</span>
+                <span className="sp sp-warn" style={{fontSize:9}}>{s.setup}</span>
+              </div>
+              <div style={{fontSize:9,color:'var(--muted)',marginBottom:7,lineHeight:1.5}}>{s.signal}</div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:4,fontSize:9}}>
+                <div><span style={{color:'var(--muted)'}}>Entry: </span><span style={{color:'var(--text)'}}>{s.entry}</span></div>
+                <div><span style={{color:'var(--muted)'}}>Stop: </span><span style={{color:'var(--red)'}}>{s.stop}</span></div>
+                <div><span style={{color:'var(--muted)'}}>T1: </span><span style={{color:'var(--green)'}}>{s.target1}</span></div>
+                <div><span style={{color:'var(--muted)'}}>T2: </span><span style={{color:'var(--green)'}}>{s.target2}</span></div>
+              </div>
+              <div style={{display:'flex',justifyContent:'space-between',marginTop:7,fontSize:9}}>
+                <span style={{color:'var(--cyan)'}}>R/R: {s.r2r}</span>
+                <span style={{color:s.conf>=7?'var(--green)':s.conf>=5?'var(--amber)':'var(--red)'}}>
+                  Confidence: {s.conf}/10
+                </span>
+              </div>
+              {/* €16 potential */}
+              <div style={{marginTop:6,background:'#0a0a0a',border:'1px solid var(--border)',borderRadius:2,padding:'4px 7px',fontSize:9}}>
+                <span style={{color:'var(--muted)'}}>€16 @ T2: </span>
+                <span style={{color:'var(--green)',fontWeight:700}}>
+                  €{s.r2r.includes('1:') ? (16 * (1 + parseFloat(s.r2r.split(':')[1]) * 0.3)).toFixed(2) : '—'}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* AI ANALYSIS OUTPUT */}
+      {(aiLoading || aiAnalysis) && (
+        <div>
+          <div className="section-lbl">AI: ΕΠΟΜΕΝΟ SOXL $6 — Big Move Analysis</div>
+          {aiLoading ? (
+            <div className="ai-loading">
+              <div className="ai-dot"/><div className="ai-dot"/><div className="ai-dot"/>
+              <span>Claude ψάχνει life-changing setups...</span>
+            </div>
+          ) : (
+            <div className="ai-output">{aiAnalysis}</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ==================== BARCHART CSV IMPORT ====================
+function BarchartImport({ onImport, onAddAlert }) {
+  const [status, setStatus] = useState('');
+  const [expanded, setExpanded] = useState(true);
+  const [dragging, setDragging] = useState(false);
+  const [parsing, setParsing] = useState(false);
+  const [aiAnalysis, setAiAnalysis] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [parsedRows, setParsedRows] = useState([]);
+  const [summary, setSummary] = useState(null);
+  const dropRef = useRef(null);
+
+  function parseCSV(text, filename) {
+    setParsing(true);
+    try {
+      const lines = text.split('\n').filter(l => l.trim() && !l.includes('Downloaded from Barchart'));
+      if (lines.length < 2) { setStatus('❌ Κενό αρχείο'); setParsing(false); return; }
+
+      const headers = lines[0].split(',').map(h => h.replace(/"/g,'').trim());
+      const rows = lines.slice(1).map(line => {
+        const vals = line.match(/(".*?"|[^,]+)/g) || line.split(',');
+        const obj = {};
+        headers.forEach((h,i) => { obj[h] = (vals[i]||'').replace(/"/g,'').trim(); });
+        return obj;
+      }).filter(r => r['Symbol'] && !r['Symbol'].includes('Downloaded'));
+
+      // Parse premium to number - Barchart sends raw integer without $ or ,
+      const parsePrem = p => {
+        if (!p) return 0;
+        const cleaned = String(p).replace(/[$,\s]/g,'');
+        const n = parseFloat(cleaned);
+        return isNaN(n) ? 0 : n;
+      };
+
+      // Parse size with comma handling
+      const parseSize = s => {
+        if (!s) return 0;
+        return parseInt(String(s).replace(/,/g,'')) || 0;
+      };
+
+      // Sentiment logic
+      const getSent = r => {
+        const t = (r['Type']||'').trim();
+        const s = (r['Side']||'').trim().toLowerCase();
+        if (t==='Call' && s==='ask') return 'BULLISH';
+        if (t==='Call' && s==='bid') return 'BEARISH';
+        if (t==='Put' && s==='ask') return 'BEARISH';
+        if (t==='Put' && s==='bid') return 'BULLISH';
+        return 'NEUTRAL';
+      };
+
+      // Build summary
+      const directional = rows.filter(r => ['ask','bid'].includes((r['Side']||'').toLowerCase()));
+      const bull = directional.filter(r => getSent(r) === 'BULLISH');
+      const bear = directional.filter(r => getSent(r) === 'BEARISH');
+      const bullPrem = bull.reduce((s,r) => s + parsePrem(r['Premium']), 0);
+      const bearPrem = bear.reduce((s,r) => s + parsePrem(r['Premium']), 0);
+      const calls = rows.filter(r => r['Type']==='Call').length;
+      const puts = rows.filter(r => r['Type']==='Put').length;
+
+      // Top symbols
+      const symMap = {};
+      rows.forEach(r => {
+        const sym = r['Symbol'];
+        if (!symMap[sym]) symMap[sym] = { total:0, calls:0, puts:0, bull:0, bear:0 };
+        symMap[sym].total += parsePrem(r['Premium']);
+        if (r['Type']==='Call') symMap[sym].calls++;
+        else symMap[sym].puts++;
+        const sent = getSent(r);
+        if (sent==='BULLISH') symMap[sym].bull += parsePrem(r['Premium']);
+        if (sent==='BEARISH') symMap[sym].bear += parsePrem(r['Premium']);
+      });
+      const topSyms = Object.entries(symMap).sort((a,b)=>b[1].total-a[1].total).slice(0,8);
+
+      // High conviction — use mapped data after parsing
+      const hcMapped = rows.map(r => {
+        const prem = parsePrem(r['Premium']);
+        const side = (r['Side']||'mid').toLowerCase();
+        return {
+          ticker_symbol: r['Symbol'],
+          put_call: r['Type']==='Put'?'PUT':'CALL',
+          side: side.toUpperCase(),
+          strike_price: parseFloat(r['Strike']||0),
+          expiry_date: (r['Expires']||'').slice(0,10),
+          dte: parseInt(r['DTE']||0),
+          total_premium: prem,
+          open_interest: parseSize(r['Open Int']),
+          volume: parseSize(r['Volume']),
+          size: parseSize(r['Size']),
+          delta: parseFloat(r['Delta']||0),
+          sentiment: getSent(r),
+        };
+      }).filter(r => r.ticker_symbol && !r.ticker_symbol.startsWith('Downloaded'));
+
+      const hc = hcMapped
+        .filter(r => ['ASK','BID'].includes(r.side) && r.total_premium > 5000000)
+        .sort((a,b) => b.total_premium - a.total_premium)
+        .slice(0,15);
+
+      const sum = { rows: rows.length, calls, puts, bullPrem, bearPrem, ratio: bullPrem/(bearPrem||1), topSyms, hc, filename };
+      setSummary(sum);
+      setParsedRows(rows);
+
+      // Map to flowTrades format — Barchart field names exact
+      const mapped = rows.map(r => {
+        const prem = parsePrem(r['Premium']);
+        const oi = parseSize(r['Open Int']);
+        const sz = parseSize(r['Size']);
+        const delta = parseFloat(r['Delta']||0);
+        const side = (r['Side']||'mid').toLowerCase();
+        const type = r['Type'] === 'Put' ? 'PUT' : 'CALL';
+        const sent = getSent(r);
+        return {
+          ticker_symbol: r['Symbol'] || '',
+          put_call: type,
+          // Critical tri-state mapping: ASK=true, BID=false, MID/unknown=null
+          is_ask_side: side === 'ask' ? true : side === 'bid' ? false : null,
+          execution_side: side === 'ask' ? 'ASK' : side === 'bid' ? 'BID' : side === 'mid' ? 'MID' : 'UNKNOWN',
+          strike_price: parseFloat(r['Strike']||0),
+          expiry_date: (r['Expires']||'').slice(0,10),
+          total_premium: prem,
+          dte: parseInt(r['DTE']||0),
+          open_interest: oi,
+          sentiment: sent,
+          side: side.toUpperCase(),
+          delta: delta,
+          iv: r['IV']||'',
+          size: sz,
+          code: r['Code']||'',
+          transaction_code: r['Code']||'',
+          source: 'BARCHART_CSV',
+          volume: parseSize(r['Volume']),
+          trade_price: parseFloat(r['Trade']||0),
+        };
+      }).filter(r => r.ticker_symbol && r.ticker_symbol !== 'Symbol');
+
+      onImport(mapped);
+      setStatus(`✅ ${rows.length} trades · ${filename}`);
+      onAddAlert('info', `📥 CSV: ${rows.length} trades φορτώθηκαν — ${filename}`);
+    } catch(err) {
+      setStatus('❌ ' + err.message);
+    }
+    setParsing(false);
+  }
+
+  function handleFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => parseCSV(ev.target.result, file.name);
+    reader.readAsText(file);
+    e.target.value = '';
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (!file || !file.name.endsWith('.csv')) { setStatus('❌ Μόνο .csv αρχεία'); return; }
+    const reader = new FileReader();
+    reader.onload = ev => parseCSV(ev.target.result, file.name);
+    reader.readAsText(file);
+  }
+
+  async function analyzeWithClaude() {
+    if (!parsedRows.length) return;
+    setAiLoading(true);
+    setAiAnalysis('');
+    try {
+      const s = summary;
+      const fmtM = v => `$${(v/1e6).toFixed(1)}M`;
+      const topSymsStr = s.topSyms.map(([sym,d]) =>
+        `${sym}: total=${fmtM(d.total)} calls=${d.calls} puts=${d.puts} bull=${fmtM(d.bull)} bear=${fmtM(d.bear)}`
+      ).join('\n');
+      const hcStr = s.hc.map(r => {
+        const sym = r.ticker_symbol || '?';
+        const type = r.put_call || '?';
+        const side = r.side || '?';
+        const strike = r.strike_price != null ? `$${r.strike_price}` : '?';
+        const exp = r.expiry_date || '?';
+        const dte = r.dte != null ? r.dte : '?';
+        const prem = r.total_premium ? fmtM(r.total_premium) : '?';
+        const delta = r.delta != null ? r.delta.toFixed(2) : '?';
+        const sent = r.sentiment || '?';
+        const sz = r.size ? r.size.toLocaleString() : '?';
+        const oi = r.open_interest ? r.open_interest.toLocaleString() : '?';
+        const vol = r.volume ? r.volume.toLocaleString() : '?';
+        return `${sym} ${type} ${side} strike=${strike} exp=${exp} DTE=${dte} prem=${prem} size=${sz} OI=${oi} vol=${vol} delta=${delta} → ${sent}`;
+      }).join('\n');
+
+      const prompt = `Είσαι senior options flow analyst. Ανάλυσε αυτό το Barchart Options Flow CSV για σήμερα:
+
+ΣΥΝΟΨΗ:
+- Σύνολο trades: ${s.rows}
+- Calls: ${s.calls} | Puts: ${s.puts}
+- Bull premium (directional): ${fmtM(s.bullPrem)}
+- Bear premium (directional): ${fmtM(s.bearPrem)}
+- Bull/Bear ratio: ${s.ratio.toFixed(2)}x
+
+TOP SYMBOLS ΑΠΟ PREMIUM:
+${topSymsStr}
+
+HIGH CONVICTION TRADES (ask/bid side, >$5M):
+${hcStr}
+
+Παράγε ΠΛΗΡΗ ανάλυση στα ελληνικά:
+
+🚨 ΑΣΥΝΗΘΙΣΤΗ ΔΡΑΣΤΗΡΙΟΤΗΤΑ
+Τα 3 πιο σημαντικά signals με εξήγηση γιατί ξεχωρίζουν.
+
+📊 MACRO SENTIMENT
+Bull ή Bear σήμερα; Ποιοι sectors κυριαρχούν;
+
+🎯 TOP TRADE SETUPS (2-3)
+Συγκεκριμένα: ticker, direction, entry zone, stop, target, γιατί.
+
+⚡ ΣΧΕΤΙΚΑ ΜΕ SOXL/SOXS/NAIL
+Αν υπάρχουν στο flow — τι δείχνουν; Αν όχι — τι σημαίνει η απουσία τους;
+
+⚠️ RISKS
+Τι μπορεί να πάει λάθος σήμερα;
+
+Να είσαι bold, συγκεκριμένος, με αριθμούς.`;
+
+      const result = await callClaude(prompt, 8000);
+      setAiAnalysis(result);
+      onAddAlert('div', '🤖 Claude ανέλυσε το CSV — ' + now_gr());
+    } catch(e) {
+      setAiAnalysis('❌ Error: ' + e.message);
+    }
+    setAiLoading(false);
+  }
+
+  const fmtM = v => v >= 1e6 ? `$${(v/1e6).toFixed(1)}M` : `$${(v/1000).toFixed(0)}K`;
+
+  return (
+    <div>
+      {/* DROP ZONE */}
+      <div
+        ref={dropRef}
+        onDragOver={e=>{e.preventDefault();setDragging(true);}}
+        onDragLeave={()=>setDragging(false)}
+        onDrop={handleDrop}
+        style={{
+          border: `2px dashed ${dragging ? 'var(--green)' : summary ? 'var(--amber)' : 'var(--border2)'}`,
+          borderRadius:4, padding:'14px 16px', marginBottom:10, textAlign:'center',
+          background: dragging ? '#001a0a' : summary ? '#1a0f00' : 'transparent',
+          transition:'all .15s', cursor:'pointer'
+        }}
+        onClick={() => document.getElementById('csvInput').click()}
+      >
+        <input id="csvInput" type="file" accept=".csv" onChange={handleFile} style={{display:'none'}}/>
+        {parsing ? (
+          <div style={{color:'var(--amber)',fontSize:10}}>⟳ Επεξεργασία...</div>
+        ) : summary ? (
+          <div>
+            <div style={{fontSize:10,color:'var(--green)',fontWeight:700,marginBottom:4}}>✅ {summary.filename}</div>
+            <div style={{fontSize:9,color:'var(--muted)'}}>
+              {summary.rows} trades · {summary.calls} calls / {summary.puts} puts · Drag νέο για αντικατάσταση
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div style={{fontSize:11,color:'var(--muted)',marginBottom:3}}>📥 Drag & Drop CSV εδώ</div>
+            <div style={{fontSize:9,color:'var(--dim)'}}>ή κλικ για επιλογή · Barchart Options Flow CSV</div>
+          </div>
+        )}
+        {status && !summary && <div style={{fontSize:9,color:'var(--red)',marginTop:4}}>{status}</div>}
+      </div>
+
+      {/* SUMMARY CARDS */}
+      {summary && (
+        <div>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:6,marginBottom:10}}>
+            {[
+              { label:'TRADES', value:summary.rows, color:'var(--text)' },
+              { label:'CALLS/PUTS', value:`${summary.calls}/${summary.puts}`, color:'var(--text)' },
+              { label:'BULL PREM', value:fmtM(summary.bullPrem), color:'var(--green)' },
+              { label:'BEAR PREM', value:fmtM(summary.bearPrem), color:'var(--red)' },
+            ].map((c,i) => (
+              <div key={i} style={{background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:3,padding:'6px 8px',textAlign:'center'}}>
+                <div style={{fontSize:7,color:'var(--muted)',letterSpacing:'.1em'}}>{c.label}</div>
+                <div style={{fontSize:12,fontWeight:700,color:c.color,marginTop:2}}>{c.value}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* RATIO BAR */}
+          <div style={{marginBottom:10}}>
+            <div style={{display:'flex',justifyContent:'space-between',fontSize:8,color:'var(--muted)',marginBottom:3}}>
+              <span style={{color:'var(--green)'}}>BULL {fmtM(summary.bullPrem)}</span>
+              <span style={{color:summary.ratio>1?'var(--green)':'var(--red)',fontWeight:700}}>{summary.ratio.toFixed(2)}x {summary.ratio>1?'BULL':'BEAR'}</span>
+              <span style={{color:'var(--red)'}}>BEAR {fmtM(summary.bearPrem)}</span>
+            </div>
+            <div style={{height:5,background:'var(--border2)',borderRadius:3,overflow:'hidden'}}>
+              <div style={{
+                height:'100%',
+                width: Math.min(100, (summary.bullPrem/(summary.bullPrem+summary.bearPrem))*100) + '%',
+                background: summary.ratio>1 ? 'var(--green)' : 'var(--red)',
+                borderRadius:3
+              }}/>
+            </div>
+          </div>
+
+          {/* TOP SYMBOLS */}
+          <div style={{marginBottom:10}}>
+            <div className="section-lbl">TOP SYMBOLS</div>
+            <div style={{display:'flex',flexWrap:'wrap',gap:4}}>
+              {summary.topSyms.slice(0,8).map(([sym,d],i) => {
+                const isBull = d.bull > d.bear;
+                return (
+                  <div key={i} style={{
+                    background:'var(--bg2)',border:`1px solid ${isBull?'#003318':'#330000'}`,
+                    borderRadius:3,padding:'4px 8px',fontSize:9
+                  }}>
+                    <span style={{color:'var(--amber)',fontWeight:700}}>{sym}</span>
+                    <span style={{color:'var(--muted)',marginLeft:4}}>{fmtM(d.total)}</span>
+                    <span style={{color:isBull?'var(--green)':'var(--red)',marginLeft:4,fontSize:8}}>{isBull?'▲BULL':'▼BEAR'}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* AI BUTTON */}
+          <button
+            className="btn btn-ai"
+            onClick={analyzeWithClaude}
+            disabled={aiLoading || !window._CLAUDE_KEY}
+            style={{width:'100%',padding:'8px',fontSize:10,letterSpacing:'.1em',marginBottom:10}}
+          >
+            {aiLoading ? '⟳ Claude αναλύει...' :
+             !window._CLAUDE_KEY ? '⚠ Χρειάζεται Claude API key (⚙️ Settings)' :
+             '🤖 ΑΝΑΛΥΣΗ ΜΕ CLAUDE AI'}
+          </button>
+
+          {/* AI OUTPUT */}
+          {aiLoading && (
+            <div className="ai-loading">
+              <div className="ai-dot"/><div className="ai-dot"/><div className="ai-dot"/>
+              <span>Claude διαβάζει {summary.rows} options trades...</span>
+            </div>
+          )}
+          {aiAnalysis && (
+            <div className="ai-output" style={{maxHeight:500,overflowY:'auto'}}>{aiAnalysis}</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ==================== SETTINGS ====================
+function Settings({ apiStatus, onKeysChanged }) {
+  const [activeSettingsTab, setActiveSettingsTab] = useState('CLAUDE');
+  const [tdKey, setTdKey] = useState(window._TD_KEY || '');
+  const [claudeKey, setClaudeKey] = useState(window._CLAUDE_KEY || '');
+  const [openaiKey, setOpenaiKey] = useState(window._OPENAI_KEY || '');
+  const [claudeModel, setClaudeModel] = useState(window._CLAUDE_MODEL || 'claude-sonnet-4-6');
+  const [openaiModel, setOpenaiModel] = useState(window._OPENAI_MODEL || 'gpt-5.2');
+  const [saved, setSaved] = useState(false);
+  const [testState, setTestState] = useState({ provider:'', status:'', message:'' });
+
+  function save() {
+    window._TD_KEY = tdKey.trim();
+    window._CLAUDE_KEY = claudeKey.trim();
+    window._OPENAI_KEY = openaiKey.trim();
+    window._CLAUDE_MODEL = claudeModel.trim() || 'claude-sonnet-4-6';
+    window._OPENAI_MODEL = openaiModel.trim() || 'gpt-5.2';
+    try {
+      sessionStorage.setItem('etf_claude_key', window._CLAUDE_KEY);
+      sessionStorage.setItem('etf_openai_key', window._OPENAI_KEY);
+      localStorage.setItem('etf_claude_model', window._CLAUDE_MODEL);
+      localStorage.setItem('etf_openai_model', window._OPENAI_MODEL);
+    } catch (_) {}
+    onKeysChanged?.({
+      td: !!window._TD_KEY,
+      claude: !!window._CLAUDE_KEY,
+      openai: !!window._OPENAI_KEY,
+    });
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }
+
+  function clearSessionKeys() {
+    window._CLAUDE_KEY = '';
+    window._OPENAI_KEY = '';
+    setClaudeKey('');
+    setOpenaiKey('');
+    try {
+      sessionStorage.removeItem('etf_claude_key');
+      sessionStorage.removeItem('etf_openai_key');
+    } catch (_) {}
+    onKeysChanged?.({ td: !!window._TD_KEY, claude:false, openai:false });
+  }
+
+  async function testProvider(provider) {
+    save();
+    setTestState({provider,status:'loading',message:'Έλεγχος σύνδεσης...'});
+    try {
+      const result = provider === 'CLAUDE'
+        ? await callClaude('Απάντησε μόνο: CLAUDE_OK', 40)
+        : await callOpenAI('Απάντησε μόνο: OPENAI_OK', 180, 'Return only the requested connection-test token.');
+      setTestState({provider,status:'ok',message:result.slice(0,120)});
+    } catch (error) {
+      setTestState({provider,status:'error',message:error.message});
+    }
+  }
+
+  const statusCards = [
+    { label:'TWELVE DATA', ok: !!tdKey || apiStatus.td, note: (!!tdKey || apiStatus.td) ? '✓ ΕΝΕΡΓΟ' : '✗ ΟΧΙ KEY' },
+    { label:'CLAUDE MAIN', ok: !!claudeKey || apiStatus.claude, note: (!!claudeKey || apiStatus.claude) ? '✓ ΚΥΡΙΟΣ AGENT' : '✗ ΟΧΙ KEY' },
+    { label:'OPENAI 2nd OPINION', ok: !!openaiKey || apiStatus.openai, note: (!!openaiKey || apiStatus.openai) ? '✓ ΔΕΥΤΕΡΟΣ AGENT' : '✗ ΟΧΙ KEY' },
+    { label:'BARCHART', ok: true, note:'CSV IMPORT ✓' },
+  ];
+
+  const inputStyle = {width:'100%',background:'var(--bg)',border:'1px solid var(--border2)',color:'var(--text)',fontFamily:'var(--font)',fontSize:11,padding:'7px 10px',borderRadius:2,outline:'none'};
+
+  return (
+    <div style={{maxWidth:760}}>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:8,marginBottom:16}}>
+        {statusCards.map((s,i) => (
+          <div key={i} style={{background:'var(--bg2)',border:`1px solid ${s.ok?'#003318':'#330000'}`,borderRadius:3,padding:'10px 8px',textAlign:'center'}}>
+            <div style={{fontSize:8,color:'var(--muted)',marginBottom:4}}>{s.label}</div>
+            <div style={{fontSize:10,color:s.ok?'var(--green)':'var(--red)',fontWeight:700}}>{s.note}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{display:'flex',gap:6,borderBottom:'1px solid var(--border2)',marginBottom:12}}>
+        {[
+          ['CLAUDE','🤖 CLAUDE MAIN'],
+          ['OPENAI','🧠 CHATGPT 2nd OPINION'],
+          ['DATA','📊 DATA / SECURITY'],
+        ].map(([key,label]) => (
+          <button key={key} className={`btn ${activeSettingsTab===key?'btn-primary':''}`} onClick={()=>setActiveSettingsTab(key)} style={{borderBottomLeftRadius:0,borderBottomRightRadius:0}}>{label}</button>
+        ))}
+      </div>
+
+      {activeSettingsTab === 'CLAUDE' && (
+        <div style={{background:'var(--bg2)',border:'1px solid var(--purple)',borderRadius:4,padding:'14px 16px',marginBottom:12}}>
+          <div className="stitle" style={{color:'var(--purple)'}}>CLAUDE — ΚΥΡΙΟΣ OPTIONS FLOW ANALYST</div>
+          <div style={{display:'grid',gap:9}}>
+            <div>
+              <div style={{fontSize:9,color:'var(--muted)',marginBottom:4}}>ANTHROPIC API KEY</div>
+              <input type="password" value={claudeKey} onChange={e=>setClaudeKey(e.target.value)} placeholder="sk-ant-api03-..." style={inputStyle}/>
+            </div>
+            <div>
+              <div style={{fontSize:9,color:'var(--muted)',marginBottom:4}}>CLAUDE MODEL</div>
+              <input value={claudeModel} onChange={e=>setClaudeModel(e.target.value)} placeholder="claude-sonnet-4-6" style={inputStyle}/>
+            </div>
+            <div style={{fontSize:8,color:'var(--dim)',lineHeight:1.7}}>Ο Claude εκτελεί την κύρια ανάλυση και, όταν υπάρχει OpenAI key, την τελική σύνθεση των δύο ανεξάρτητων γνωμών.</div>
+            <div><button className="btn btn-ai" onClick={()=>testProvider('CLAUDE')}>TEST CLAUDE</button></div>
+          </div>
+        </div>
+      )}
+
+      {activeSettingsTab === 'OPENAI' && (
+        <div style={{background:'var(--bg2)',border:'1px solid var(--cyan)',borderRadius:4,padding:'14px 16px',marginBottom:12}}>
+          <div className="stitle" style={{color:'var(--cyan)'}}>OPENAI / CHATGPT — ΑΝΕΞΑΡΤΗΤΗ ΔΕΥΤΕΡΗ ΓΝΩΜΗ</div>
+          <div style={{display:'grid',gap:9}}>
+            <div>
+              <div style={{fontSize:9,color:'var(--muted)',marginBottom:4}}>OPENAI API KEY</div>
+              <input type="password" value={openaiKey} onChange={e=>setOpenaiKey(e.target.value)} placeholder="sk-proj-..." style={inputStyle}/>
+            </div>
+            <div>
+              <div style={{fontSize:9,color:'var(--muted)',marginBottom:4}}>OPENAI MODEL</div>
+              <input value={openaiModel} onChange={e=>setOpenaiModel(e.target.value)} placeholder="gpt-5.2" style={inputStyle}/>
+            </div>
+            <div style={{fontSize:8,color:'var(--dim)',lineHeight:1.7}}>Το OpenAI agent λαμβάνει τα ίδια deterministic δεδομένα, αλλά όχι την πρώτη απάντηση του Claude. Οι κλήσεις περνούν από /.netlify/functions/openai-proxy. Μπορείς να βάλεις key εδώ ή να χρησιμοποιήσεις το OPENAI_API_KEY του Netlify.</div>
+            <div><button className="btn" onClick={()=>testProvider('OPENAI')} style={{borderColor:'var(--cyan)',color:'var(--cyan)'}}>TEST OPENAI</button></div>
+          </div>
+        </div>
+      )}
+
+      {activeSettingsTab === 'DATA' && (
+        <div>
+          <div style={{background:'var(--bg2)',border:'1px solid var(--amber)',borderRadius:4,padding:'14px 16px',marginBottom:12}}>
+            <div className="stitle" style={{color:'var(--amber)'}}>TWELVE DATA</div>
+            <input type="password" value={tdKey} onChange={e=>setTdKey(e.target.value)} placeholder="Twelve Data key" style={inputStyle}/>
+          </div>
+          <div style={{background:'#1a0000',border:'1px solid var(--red)',borderRadius:4,padding:'12px 14px',fontSize:9,color:'var(--muted)',lineHeight:1.8,marginBottom:12}}>
+            <b style={{color:'var(--red)'}}>SECURITY:</b> Οι OpenAI κλήσεις περνούν πλέον από Netlify Function. Μπορείς είτε να εισαγάγεις key στο tab (κρατείται στο sessionStorage και στέλνεται μόνο στη δική σου function) είτε, προτιμότερα, να ορίσεις OPENAI_API_KEY στα Netlify Environment Variables και να αφήσεις το πεδίο κενό.
+          </div>
+          <button className="btn" onClick={clearSessionKeys}>🗑 CLEAR SESSION AI KEYS</button>
+        </div>
+      )}
+
+      <div style={{display:'flex',alignItems:'center',gap:8,margin:'12px 0'}}>
+        <button className="btn btn-primary" onClick={save}>{saved ? '✓ ΑΠΟΘΗΚΕΥΤΗΚΑΝ' : '💾 SAVE SETTINGS'}</button>
+        <span style={{fontSize:8,color:'var(--dim)'}}>AI keys: μόνο για το τρέχον tab · Models: αποθηκεύονται στη συσκευή</span>
+      </div>
+
+      {testState.status && (
+        <div style={{background:'var(--bg2)',border:`1px solid ${testState.status==='ok'?'var(--green)':testState.status==='error'?'var(--red)':'var(--amber)'}`,borderRadius:3,padding:'9px 11px',fontSize:9,color:'var(--text)',marginBottom:12}}>
+          {testState.status==='loading'?'⟳ ':testState.status==='ok'?'✓ ':'❌ '}{testState.provider}: {testState.message}
+        </div>
+      )}
+
+      <div style={{background:'var(--bg2)',border:'1px solid var(--green)',borderRadius:4,padding:'14px 16px'}}>
+        <div className="stitle" style={{color:'var(--green)'}}>📊 BARCHART PREMIER — Κύρια πηγή Options Flow</div>
+        <div style={{fontSize:9,color:'var(--muted)',lineHeight:2}}>
+          <b style={{color:'var(--text)'}}>Options Flow CSV</b> → Import στο OPTIONS FLOW tab.<br/>
+          Προτεινόμενο φίλτρο: <span style={{color:'var(--amber)'}}>Min Premium $10,000</span> · Type All · ETF universe.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==================== NOTEPAD ====================
+
+const NOTE_TEMPLATES = [
+  { label:'Trade Setup', text:`📋 TRADE SETUP — ${new Date().toLocaleDateString('el-GR')}
+━━━━━━━━━━━━━━━━━━━━━━
+Ticker: 
+Direction: LONG / SHORT
+Entry zone: $
+Stop loss: $
+Target 1: $
+Target 2: $
+R/R ratio: 1:
+Confidence: /10
+
+Signal που με έπεισε:
+
+Notes:
+` },
+  { label:'Daily Log', text:`📅 ΗΜΕΡΟΛΟΓΙΟ — ${new Date().toLocaleDateString('el-GR')}
+━━━━━━━━━━━━━━━━━━━━━━
+🌅 PRE-MARKET:
+• SPY futures:
+• Macro news:
+• Key signals:
+
+📈 INTRADAY:
+• Trades:
+• P&L:
+• Mistakes:
+
+🌙 EOD:
+• Lessons:
+• Αύριο:
+` },
+  { label:'Watchlist Note', text:`👁 WATCHLIST NOTE — ${new Date().toLocaleDateString('el-GR')}
+━━━━━━━━━━━━━━━━━━━━━━
+Ticker | Γιατί παρακολουθώ | Entry trigger | Stop
+` },
+  { label:'Idea', text:`💡 ΙΔΕΑ — ${new Date().toLocaleDateString('el-GR')}
+━━━━━━━━━━━━━━━━━━━━━━
+` },
+];
+
+function Notepad() {
+  const [notes, setNotes] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('terminal_notes') || '[]');
+    } catch {
+      return [{ id: Date.now(), title: 'Πρώτη Σημείωση', content: '📝 Γράψε ό,τι θέλεις εδώ...', date: new Date().toLocaleDateString('el-GR'), pinned: false }];
+    }
+  });
+  const [activeNote, setActiveNote] = useState(0);
+  const [search, setSearch] = useState('');
+  const saveTimer = useRef(null);
+
+  useEffect(() => {
+    localStorage.setItem('terminal_notes', JSON.stringify(notes));
+  }, [notes]);
+
+  function newNote(template = '') {
+    const note = {
+      id: Date.now(),
+      title: 'Νέα Σημείωση',
+      content: template || '',
+      date: new Date().toLocaleDateString('el-GR'),
+      pinned: false
+    };
+    setNotes(n => [note, ...n]);
+    setActiveNote(0);
+  }
+
+  function updateContent(val) {
+    setNotes(n => n.map((note, i) => {
+      if (i !== activeNote) return note;
+      // Auto-extract title from first line
+      const firstLine = val.split('\n')[0].replace(/^[📋📅👁💡📝#*\s━-]+/, '').trim();
+      return { ...note, content: val, title: firstLine || note.title, date: new Date().toLocaleDateString('el-GR') };
+    }));
+  }
+
+  function deleteNote(i) {
+    if (notes.length === 1) return;
+    setNotes(n => n.filter((_, idx) => idx !== i));
+    setActiveNote(Math.max(0, activeNote - 1));
+  }
+
+  function togglePin(i) {
+    setNotes(n => n.map((note, idx) => idx === i ? { ...note, pinned: !note.pinned } : note));
+  }
+
+  const filtered = notes.filter(n =>
+    !search || n.title.toLowerCase().includes(search.toLowerCase()) || n.content.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const sorted = [...filtered].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+  const current = notes[activeNote];
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 8, minHeight: 500 }}>
+      {/* LEFT — note list */}
+      <div style={{ borderRight: '1px solid var(--border2)', paddingRight: 8 }}>
+        {/* Search */}
+        <input
+          placeholder="🔍 Αναζήτηση..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          style={{ width: '100%', background: 'var(--bg2)', border: '1px solid var(--border2)', color: 'var(--text)', fontFamily: 'var(--font)', fontSize: 10, padding: '5px 8px', borderRadius: 2, outline: 'none', marginBottom: 7 }}
+        />
+
+        {/* Templates */}
+        <div style={{ marginBottom: 7 }}>
+          <div className="section-lbl">TEMPLATES</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {NOTE_TEMPLATES.map((t, i) => (
+              <button key={i} className="btn" style={{ fontSize: 8, padding: '2px 6px' }} onClick={() => newNote(t.text)}>
+                + {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <button className="btn btn-primary" style={{ width: '100%', marginBottom: 8, fontSize: 9 }} onClick={() => newNote()}>
+          + ΝΕΑ ΣΗΜΕΙΩΣΗ
+        </button>
+
+        <div className="divider" />
+
+        {/* Note list */}
+        <div style={{ maxHeight: 420, overflowY: 'auto' }}>
+          {sorted.length === 0 && <div style={{ fontSize: 9, color: 'var(--dim)', padding: '8px 0' }}>Δεν βρέθηκαν σημειώσεις.</div>}
+          {sorted.map((note, i) => {
+            const realIdx = notes.indexOf(note);
+            const isActive = realIdx === activeNote;
+            return (
+              <div
+                key={note.id}
+                onClick={() => setActiveNote(realIdx)}
+                style={{
+                  padding: '7px 8px', borderRadius: 3, marginBottom: 3, cursor: 'pointer',
+                  background: isActive ? '#1a0f00' : 'transparent',
+                  border: `1px solid ${isActive ? 'var(--amber)' : 'transparent'}`,
+                  transition: 'all .1s'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ fontSize: 10, color: isActive ? 'var(--amber)' : 'var(--text)', fontWeight: isActive ? 700 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 130 }}>
+                    {note.pinned ? '📌 ' : ''}{note.title || 'Χωρίς τίτλο'}
+                  </div>
+                  <div style={{ display: 'flex', gap: 3 }}>
+                    <button onClick={e => { e.stopPropagation(); togglePin(realIdx); }}
+                      style={{ background: 'transparent', border: 'none', color: note.pinned ? 'var(--amber)' : 'var(--dim)', cursor: 'pointer', fontSize: 10, padding: 0 }}>
+                      📌
+                    </button>
+                    <button onClick={e => { e.stopPropagation(); deleteNote(realIdx); }}
+                      style={{ background: 'transparent', border: 'none', color: 'var(--dim)', cursor: 'pointer', fontSize: 10, padding: 0 }}>
+                      ×
+                    </button>
+                  </div>
+                </div>
+                <div style={{ fontSize: 8, color: 'var(--dim)', marginTop: 2 }}>{note.date}</div>
+                <div style={{ fontSize: 9, color: 'var(--muted)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {note.content.split('\n').find(l => l.trim() && !l.includes('━') && l !== note.title) || '—'}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* RIGHT — editor */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {current ? (
+          <>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ fontSize: 9, color: 'var(--muted)' }}>
+                {current.pinned ? '📌 ' : ''}{current.date} · {notes.length} σημειώσεις · αυτόματη αποθήκευση
+              </div>
+              <div style={{ display: 'flex', gap: 5 }}>
+                <button className="btn" style={{ fontSize: 9 }} onClick={() => {
+                  navigator.clipboard?.writeText(current.content);
+                }}>📋 Copy</button>
+                <button className="btn" style={{ fontSize: 9 }} onClick={() => {
+                  const blob = new Blob([current.content], { type: 'text/plain' });
+                  const a = document.createElement('a');
+                  a.href = URL.createObjectURL(blob);
+                  a.download = (current.title || 'note') + '.txt';
+                  a.click();
+                }}>⬇ Export</button>
+              </div>
+            </div>
+            <textarea
+              value={current.content}
+              onChange={e => updateContent(e.target.value)}
+              spellCheck={false}
+              style={{
+                flex: 1, minHeight: 460, width: '100%',
+                background: 'var(--bg2)', border: '1px solid var(--border2)',
+                color: 'var(--text)', fontFamily: 'var(--font)', fontSize: 11,
+                padding: '12px 14px', borderRadius: 3, outline: 'none',
+                resize: 'none', lineHeight: 1.8,
+                caretColor: 'var(--amber)'
+              }}
+              onFocus={e => e.target.style.borderColor = 'var(--amber)'}
+              onBlur={e => e.target.style.borderColor = 'var(--border2)'}
+            />
+            <div style={{ fontSize: 8, color: 'var(--dim)', textAlign: 'right' }}>
+              {current.content.length} χαρακτήρες · {current.content.split('\n').length} γραμμές
+            </div>
+          </>
+        ) : (
+          <div style={{ fontSize: 10, color: 'var(--dim)', padding: '40px 0', textAlign: 'center' }}>
+            Επίλεξε σημείωση ή δημιούργησε νέα.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ==================== CLAUDE ANALYSIS PANEL ====================
+
+const DAILY_ANALYSIS = {
+  date: '8 Ιουλίου 2026',
+  topSignals: [
+    {
+      rank: 1, ticker: 'NAIL', icon: '🚨',
+      title: 'NAIL -9.97% — ΚΡΙΣΙΜΟ',
+      subtitle: 'Direxion Daily Homebuilders Bull 3X',
+      body: 'Πτώση -9.97% με intraday range 8.03%, closing near session low = persistent selling. 5-ήμερα net flows: -$11.43M — κεφάλαια φεύγουν. Bought Puts επιβεβαιώνουν bearish τοποθέτηση. -26.75% τον τελευταίο χρόνο.',
+      sentiment: 'BEARISH', color: 'var(--red)',
+      action: 'AVOID LONG / SHORT SETUP'
+    },
+    {
+      rank: 2, ticker: 'SOXL/SOXS', icon: '⚡',
+      title: 'Divergence Ημιαγωγών',
+      subtitle: '0 calls / 10 puts παρά +3.13% άνοδο',
+      body: 'SOXL +3.13% αλλά pure put flow = Bought Puts / προστασία κέρδους ή directional fade. Intraday range 9.93%. Samsung αποτελέσματα + κύμα profit-taking πίεσε τον κλάδο. SOXS -89.93% YTD — για hedging μόνο σε πολύ σύντομα παράθυρα.',
+      sentiment: 'DIVERGENCE', color: 'var(--purple)',
+      action: 'MONITOR — fade if SOXL fails $170'
+    },
+    {
+      rank: 3, ticker: 'MBLY', icon: '🐋',
+      title: 'MBLY 23:1 Call/Put Ratio',
+      subtitle: '26,298 calls vs 1,135 puts — BULLISH SWEEP',
+      body: 'Options volume 27,433 contracts σε μία μέρα. Πιο ενεργά: Aug 21 $11 call και $9 call spread (3,495 contracts, εκ των οποίων 2,330 ήταν $11 calls). Sweep-style urgency — Bought Calls για earnings 31 Ιουλίου 2026.',
+      sentiment: 'BULLISH', color: 'var(--green)',
+      action: 'WATCH — earnings play pre-Jul 31'
+    },
+  ],
+  flowByGroup: [
+    {
+      group: 'ETFs Ευρείας Αγοράς',
+      items: [
+        { ticker:'VOO', price:'$683.16', change:'-0.57%', flow:'0 calls / 10 puts', congress:5, verdict:'Bearish hedge', verdictColor:'var(--red)', detail:'Pure put-heavy flow = hedging ή directional short.' },
+        { ticker:'SPY', price:'$743.21', change:'-0.60%', flow:'0 calls / 10 puts', congress:5, verdict:'Bearish hedge', verdictColor:'var(--red)', detail:'$81.12M flow στις 1/7. Σήμερα Bought Puts = bearish hedging short-term.' },
+        { ticker:'QQQ', price:'$707.16', change:'-0.32%', flow:'0 calls / 10 puts', congress:5, verdict:'Bearish', verdictColor:'var(--red)', detail:'SpaceX εντάχθηκε στον Nasdaq-100 — δεν αλλάζει την bearish εικόνα.' },
+      ]
+    },
+    {
+      group: 'Ημιαγωγοί 3X',
+      items: [
+        { ticker:'SOXL', price:'$170.45', change:'+3.13%', flow:'0 calls / 10 puts', congress:0, verdict:'⚡ DIVERGENCE', verdictColor:'var(--purple)', detail:'Άνοδος +3.13% αλλά pure puts = fade play ή προστασία θέσεων. Intraday 9.93%.' },
+        { ticker:'SOXS', price:'$4.655', change:'-3.02%', flow:'0 calls / 10 puts', congress:0, verdict:'Bearish bet', verdictColor:'var(--red)', detail:'-89.93% YTD. Puts = bearish bet ότι SOXS συνεχίζει να πέφτει. Για hedging μόνο.' },
+        { ticker:'NAIL', price:'$40.54', change:'-9.97%', flow:'0 calls / 10 puts', congress:0, verdict:'🚨 ΚΡΙΣΙΜΟ', verdictColor:'var(--red)', detail:'-26.75% YTD. Closing near low. Persistent selling. Bought Puts επιβεβαιώνουν.' },
+      ]
+    },
+    {
+      group: 'Small-Cap / Special',
+      items: [
+        { ticker:'MBLY', price:'$9.43', change:'-0.79%', flow:'26,298 calls / 1,135 puts', congress:0, verdict:'🐋 23:1 BULL SWEEP', verdictColor:'var(--green)', detail:'Aug $11 calls = earnings play. 31 Ιουλίου 2026. Sweep urgency.' },
+        { ticker:'PLUG', price:'$2.50', change:'+0.80%', flow:'0 calls / 10 puts', congress:5, verdict:'Sold Puts?', verdictColor:'var(--amber)', detail:'139 insiders + closing near high → Sold Puts (bullish income) πιθανό.' },
+        { ticker:'DLHC', price:'$5.215', change:'-0.67%', flow:'1 put only', congress:0, verdict:'Insider driven', verdictColor:'var(--cyan)', detail:'97 insider trades. Minimal options. Closing near low — persistent selling.' },
+      ]
+    }
+  ],
+  congress: {
+    total_members: 51,
+    total_trades: 15088,
+    recent: [
+      { action:'BUY', tickers:'HD, IBM, JNJ, PPG', party:'Democrat', chamber:'House', state:'TX' },
+      { action:'SELL', tickers:'C (Citigroup)', party:'Republican', chamber:'Senate', state:'WV' },
+    ]
+  },
+  macro: 'Σήμερα ήταν risk-off ημέρα με bearish flow σε VOO/SPY/QQQ (0 calls / 10 puts και στα τρία). Το NAIL -9.97% και το SOXL divergence (τιμή ↑ + puts ↑) ήταν τα δύο κύρια signals. Το MBLY με 23:1 call ratio είναι η μόνη bullish εξαίρεση — earnings play για 31 Ιουλίου.'
+};
+
+function ClaudeAnalysis({ tickerData, flowTrades, onAddAlert }) {
+  const [liveAnalysis, setLiveAnalysis] = useState('');
+  const [liveLoading, setLiveLoading] = useState(false);
+  const [activeSection, setActiveSection] = useState('today'); // today | live | congress
+
+  async function runLiveAnalysis() {
+    setLiveLoading(true);
+    setLiveAnalysis('');
+    try {
+      const tickerSummary = Object.entries(tickerData).map(([t,d]) =>
+        `${t}: $${d?.price||'—'} ${d?.change>=0?'+':''}${d?.change||0}% | vol=${d?.vol||'—'} | puts=${d?.putFlow||0}% calls=${d?.callFlow||0}% | signals: ${(d?.signals||[]).join(', ')||'none'}`
+      ).join('\n');
+
+      const flowSummary = flowTrades.slice(0,15).map(t => {
+        const side = detectFlowSide(t);
+        const sent = getSentiment(t);
+        const type = (t.put_call||t.option_type||'').toUpperCase();
+        return `${t.ticker_symbol||t.ticker}: ${type} ${side} → ${sent} | $${t.strike_price||'—'} exp:${t.expiry_date||'—'} prem:${fmtK(t.total_premium||0)}`;
+      }).join('\n');
+
+      const result = await callClaude(`Είσαι ο senior options flow analyst μου. Παράγε ΠΛΗΡΗ ημερήσια ανάλυση:
+
+## ΔΕΔΟΜΕΝΑ ΣΗΜΕΡΑ
+TICKERS:
+${tickerSummary}
+
+OPTIONS FLOW:
+${flowSummary}
+
+## ΔΟΜΗ ΑΝΑΛΥΣΗΣ (ακολούθησε αυτή ακριβώς):
+
+🚨 ΑΣΥΝΗΘΙΣΤΗ ΔΡΑΣΤΗΡΙΟΤΗΤΑ
+Τα 3 πιο σημαντικά signals σήμερα με εξήγηση.
+
+🌊 ΡΟΗ OPTIONS — ΑΝΑΛΥΤΙΚΑ
+Για κάθε ticker: flow direction, verdict (BULLISH/BEARISH/DIVERGENCE), actionable insight.
+
+📋 TRADE PLAN ΣΗΜΕΡΑ
+Top 2 setups με entry/stop/target.
+
+⚠️ MACRO CONTEXT
+Τι macro εξηγεί τα σήματα;
+
+🎯 ΣΥΜΠΕΡΑΣΜΑ
+Μία πρόταση: το πιο actionable πράγμα που μπορώ να κάνω σήμερα.
+
+Γράψε στα ελληνικά, συγκεκριμένα, με αριθμούς.`, 8000);
+
+      setLiveAnalysis(result);
+      onAddAlert('div', '📊 Claude Analysis ολοκληρώθηκε — ' + now_gr());
+    } catch(e) { setLiveAnalysis('Error: ' + e.message); }
+    setLiveLoading(false);
+  }
+
+  const sentColor = s => s==='BULLISH'?'var(--green)':s==='BEARISH'?'var(--red)':s==='DIVERGENCE'?'var(--purple)':'var(--amber)';
+
+  return (
+    <div>
+      {/* SECTION TABS */}
+      <div style={{display:'flex',gap:6,marginBottom:12}}>
+        {[['today','📊 Σημερινή Ανάλυση'],['live','🤖 Live AI'],['congress','🏛️ Congress']].map(([k,l])=>(
+          <button key={k} className={`btn ${activeSection===k?'btn-primary':''}`} onClick={()=>setActiveSection(k)}>{l}</button>
+        ))}
+        {activeSection==='live' && (
+          <button className="btn btn-ai" onClick={runLiveAnalysis} disabled={liveLoading} style={{marginLeft:'auto'}}>
+            {liveLoading ? '⟳ Ανάλυση...' : '▸ ΠΑΡΑΓΕ ΑΝΑΛΥΣΗ'}
+          </button>
+        )}
+        <div style={{marginLeft:activeSection==='live'?0:'auto',fontSize:9,color:'var(--muted)',alignSelf:'center'}}>
+          {DAILY_ANALYSIS.date}
+        </div>
+      </div>
+
+      {activeSection === 'today' && (
+        <div>
+          {/* MACRO HEADER */}
+          <div style={{background:'#0d0018',border:'1px solid #2a0044',borderRadius:4,padding:'10px 13px',marginBottom:12,fontSize:10,color:'var(--muted)',lineHeight:1.7}}>
+            <span style={{color:'var(--purple)',fontWeight:700}}>📊 MACRO CONTEXT — </span>
+            {DAILY_ANALYSIS.macro}
+          </div>
+
+          {/* TOP 3 SIGNALS */}
+          <div className="section-lbl">🚨 ΑΣΥΝΗΘΙΣΤΗ ΔΡΑΣΤΗΡΙΟΤΗΤΑ — Top 3 Signals</div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8,marginBottom:14}}>
+            {DAILY_ANALYSIS.topSignals.map((s,i) => (
+              <div key={i} style={{background:'var(--bg2)',border:`1px solid ${s.color}44`,borderRadius:4,padding:'10px 11px'}}>
+                <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:5}}>
+                  <span style={{fontSize:18}}>{s.icon}</span>
+                  <div>
+                    <div style={{fontSize:11,fontWeight:700,color:s.color}}>{s.ticker}</div>
+                    <div style={{fontSize:8,color:'var(--muted)'}}>{s.subtitle}</div>
+                  </div>
+                  <span style={{marginLeft:'auto',fontSize:8,padding:'2px 5px',borderRadius:2,background:s.color+'22',color:s.color,border:`1px solid ${s.color}44`}}>{s.sentiment}</span>
+                </div>
+                <div style={{fontSize:10,color:'var(--text)',lineHeight:1.6,marginBottom:7}}>{s.body}</div>
+                <div style={{fontSize:9,background:'#0a0a0a',border:'1px solid var(--border)',borderRadius:2,padding:'4px 8px',color:s.color}}>
+                  ▸ {s.action}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* FLOW BY GROUP */}
+          <div className="section-lbl">🌊 ΡΟΗ OPTIONS — Αναλυτικά</div>
+          {DAILY_ANALYSIS.flowByGroup.map((group,gi) => (
+            <div key={gi} style={{marginBottom:12}}>
+              <div style={{fontSize:9,color:'var(--amber)',letterSpacing:'.1em',marginBottom:5,paddingLeft:2}}>{group.group}</div>
+              <table className="ftable" style={{marginBottom:4}}>
+                <thead>
+                  <tr>
+                    <th>TICKER</th><th>ΤΙΜΗ</th><th>%</th><th>FLOW</th>
+                    <th>CONGRESS</th><th>VERDICT</th><th>INSIGHT</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {group.items.map((item,ii) => (
+                    <tr key={ii}>
+                      <td style={{color:'var(--amber)',fontWeight:700}}>{item.ticker}</td>
+                      <td>{item.price}</td>
+                      <td className={item.change.startsWith('+')?'up':'down'}>{item.change}</td>
+                      <td style={{color:'var(--muted)',fontSize:9}}>{item.flow}</td>
+                      <td style={{color:item.congress>0?'var(--cyan)':'var(--dim)'}}>{item.congress>0?`${item.congress} trades`:'—'}</td>
+                      <td style={{color:item.verdictColor,fontWeight:700,fontSize:9,whiteSpace:'nowrap'}}>{item.verdict}</td>
+                      <td style={{fontSize:9,color:'var(--muted)',maxWidth:180}}>{item.detail}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ))}
+
+          {/* PUT/CALL SUMMARY */}
+          <div style={{background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:4,padding:'10px 12px',marginBottom:12}}>
+            <div className="section-lbl" style={{marginBottom:6}}>MACRO PATTERN ΣΗΜΕΡΑ</div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:8}}>
+              {[
+                { label:'BROAD MARKET', value:'100% PUTS', sub:'VOO/SPY/QQQ', color:'var(--red)' },
+                { label:'SEMIS', value:'DIVERGENCE', sub:'SOXL ↑ + puts', color:'var(--purple)' },
+                { label:'HOMEBUILDERS', value:'-9.97%', sub:'NAIL — bearish', color:'var(--red)' },
+                { label:'EXCEPTION', value:'MBLY 23:1', sub:'Call sweep', color:'var(--green)' },
+              ].map((s,i) => (
+                <div key={i} style={{textAlign:'center',padding:'8px',background:'#0a0a0a',borderRadius:3,border:`1px solid ${s.color}33`}}>
+                  <div style={{fontSize:8,color:'var(--muted)',marginBottom:3}}>{s.label}</div>
+                  <div style={{fontSize:13,fontWeight:700,color:s.color}}>{s.value}</div>
+                  <div style={{fontSize:8,color:'var(--dim)',marginTop:2}}>{s.sub}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeSection === 'live' && (
+        <div>
+          {liveLoading ? (
+            <div className="ai-loading">
+              <div className="ai-dot"/><div className="ai-dot"/><div className="ai-dot"/>
+              <span>Claude παράγει ανάλυση βάσει live data...</span>
+            </div>
+          ) : liveAnalysis ? (
+            <div className="ai-output">{liveAnalysis}</div>
+          ) : (
+            <div style={{fontSize:9,color:'var(--dim)',padding:'30px 0',textAlign:'center',lineHeight:2}}>
+              Πάτα <span style={{color:'var(--purple)'}}>▸ ΠΑΡΑΓΕ ΑΝΑΛΥΣΗ</span> για live Claude analysis<br/>
+              βάσει των τρεχόντων ticker data και options flow.
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeSection === 'congress' && (
+        <div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8,marginBottom:12}}>
+            {[
+              { label:'ΜΕΛΗ ΥΠΟ ΠΑΡΑΚΟΛΟΥΘΗΣΗ', value:'51', color:'var(--cyan)' },
+              { label:'ΣΥΝΟΛΙΚΕΣ ΣΥΝΑΛΛΑΓΕΣ', value:'15,088', color:'var(--amber)' },
+              { label:'ΑΠΟ', value:'6 Ιουλ 2026', color:'var(--muted)' },
+            ].map((s,i) => (
+              <div key={i} style={{background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:3,padding:'10px',textAlign:'center'}}>
+                <div style={{fontSize:8,color:'var(--muted)',marginBottom:4}}>{s.label}</div>
+                <div style={{fontSize:18,fontWeight:700,color:s.color}}>{s.value}</div>
+              </div>
+            ))}
+          </div>
+          <div className="section-lbl">ΠΡΟΣΦΑΤΕΣ ΣΥΝΑΛΛΑΓΕΣ</div>
+          {DAILY_ANALYSIS.congress.recent.map((r,i) => (
+            <div key={i} style={{background:'var(--bg2)',border:`1px solid ${r.action==='BUY'?'#003318':'#330000'}`,borderRadius:3,padding:'9px 11px',marginBottom:6,display:'flex',alignItems:'center',gap:10}}>
+              <span style={{fontSize:18}}>{r.action==='BUY'?'🟢':'🔴'}</span>
+              <div style={{flex:1}}>
+                <div style={{display:'flex',gap:6,alignItems:'center',marginBottom:3}}>
+                  <span style={{fontSize:11,fontWeight:700,color:r.action==='BUY'?'var(--green)':'var(--red)'}}>{r.action}</span>
+                  <span style={{fontSize:12,color:'var(--amber)',fontWeight:700}}>{r.tickers}</span>
+                </div>
+                <div style={{fontSize:9,color:'var(--muted)'}}>
+                  {r.party} · {r.chamber} · {r.state}
+                </div>
+              </div>
+            </div>
+          ))}
+          <div style={{marginTop:10,fontSize:9,color:'var(--dim)',lineHeight:1.8,background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:3,padding:'8px 10px'}}>
+            <span style={{color:'var(--muted)'}}>⚠ Σημείωση:</span> Congressional trades αποκαλύπτονται με καθυστέρηση 30-45 ημερών.
+            Χρήσιμα για macro direction, όχι για timing. Πάντα UNVERIFIED μέχρι cross-check.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ==================== OPTIONS FLOW INTELLIGENCE ====================
+const FLOW_SIDE = Object.freeze({ ASK:'ASK', BID:'BID', MID:'MID', UNKNOWN:'UNKNOWN' });
+const FLOW_DIRECTION = Object.freeze({ BULLISH:'BULLISH', BEARISH:'BEARISH', UNKNOWN:'UNKNOWN' });
+const DEALER_GAMMA = Object.freeze({ SHORT:'SHORT_GAMMA', LONG:'LONG_GAMMA', UNKNOWN:'UNKNOWN' });
+const clamp01 = value => Math.max(0, Math.min(1, Number(value) || 0));
+
+function normalizeExecutionSide(trade) {
+  const raw = String(trade.execution_side || trade.side || trade.action || trade.transaction_side || '').trim().toUpperCase();
+  if (['ASK','BUY','BOUGHT'].includes(raw)) return FLOW_SIDE.ASK;
+  if (['BID','SELL','SOLD'].includes(raw)) return FLOW_SIDE.BID;
+  if (['MID','MIDDLE'].includes(raw)) return FLOW_SIDE.MID;
+  if (trade.is_ask_side === true) return FLOW_SIDE.ASK;
+  if (trade.is_ask_side === false) return FLOW_SIDE.BID;
+  return FLOW_SIDE.UNKNOWN;
+}
+
+function normalizeTransactionType(code) {
+  const value = String(code || '').toUpperCase().replace(/[^A-Z]/g,'');
+  if (value.includes('BTO') || value.includes('BUYTOOPEN')) return 'BUY_TO_OPEN';
+  if (value.includes('STO') || value.includes('SELLTOOPEN')) return 'SELL_TO_OPEN';
+  if (value.includes('BTC') || value.includes('BUYTOCLOSE')) return 'BUY_TO_CLOSE';
+  if (value.includes('STC') || value.includes('SELLTOCLOSE')) return 'SELL_TO_CLOSE';
+  return 'UNKNOWN';
+}
+
+function classifyDirectionalFlow(optionType, side) {
+  if (side === FLOW_SIDE.MID || side === FLOW_SIDE.UNKNOWN) return FLOW_DIRECTION.UNKNOWN;
+  if (optionType === 'CALL' && side === FLOW_SIDE.ASK) return FLOW_DIRECTION.BULLISH;
+  if (optionType === 'CALL' && side === FLOW_SIDE.BID) return FLOW_DIRECTION.BEARISH;
+  if (optionType === 'PUT' && side === FLOW_SIDE.ASK) return FLOW_DIRECTION.BEARISH;
+  if (optionType === 'PUT' && side === FLOW_SIDE.BID) return FLOW_DIRECTION.BULLISH;
+  return FLOW_DIRECTION.UNKNOWN;
+}
+
+function classifyDealerGamma(side) {
+  if (side === FLOW_SIDE.ASK) return DEALER_GAMMA.SHORT;
+  if (side === FLOW_SIDE.BID) return DEALER_GAMMA.LONG;
+  return DEALER_GAMMA.UNKNOWN;
+}
+
+function calculateAtmProximity(delta) {
+  return clamp01(1 - Math.abs(Math.abs(delta) - 0.5) * 2);
+}
+
+function calculateDteWeight(dte) {
+  return 1 / (1 + Math.max(0, dte) / 30);
+}
+
+function calculateConviction(side, transactionType, volOI) {
+  if (![FLOW_SIDE.ASK, FLOW_SIDE.BID].includes(side)) return 0;
+  const openingWeight = ['BUY_TO_OPEN','SELL_TO_OPEN'].includes(transactionType)
+    ? 1
+    : ['BUY_TO_CLOSE','SELL_TO_CLOSE'].includes(transactionType) ? 0.45 : 0.65;
+  const unusualWeight = clamp01(Math.log10(1 + Math.max(0, volOI)) / 2);
+  return clamp01(0.62 + 0.23 * openingWeight + 0.15 * unusualWeight);
+}
+
+function normalizeFlowTrade(raw, index) {
+  const side = normalizeExecutionSide(raw);
+  const optionType = String(raw.put_call || raw.option_type || raw.type || '').toUpperCase();
+  const delta = Math.abs(parseFloat(raw.delta) || 0);
+  const size = Math.max(0, Number(raw.size) || 0);
+  const volume = Math.max(0, Number(raw.volume) || size || 0);
+  const openInterest = Math.max(0, Number(raw.open_interest) || 0);
+  const dte = Number.isFinite(Number(raw.dte)) ? Number(raw.dte) : -1;
+  const premium = Math.max(0, Number(raw.total_premium || raw.premium) || 0);
+  const volOI = openInterest > 0 ? volume / openInterest : volume > 0 ? volume : 0;
+  const transactionType = normalizeTransactionType(raw.transaction_code || raw.code || raw.opening_action);
+  const direction = classifyDirectionalFlow(optionType, side);
+  const dealerGamma = classifyDealerGamma(side);
+  const atmProximity = calculateAtmProximity(delta);
+  const dteWeight = calculateDteWeight(dte);
+  const deltaExposureShares = size * 100 * delta;
+  const gammaImpactRaw = deltaExposureShares * atmProximity * dteWeight;
+  const conviction = calculateConviction(side, transactionType, volOI);
+
+  return {
+    id: `${raw.ticker_symbol || raw.ticker || 'NA'}-${index}-${raw.expiry_date || raw.expiration || ''}-${raw.strike_price || raw.strike || ''}`,
+    ticker: raw.ticker_symbol || raw.ticker || '—',
+    optionType,
+    side,
+    direction,
+    dealerGamma,
+    transactionType,
+    delta,
+    size,
+    volume,
+    openInterest,
+    volOI,
+    premium,
+    weightedPremium: premium * conviction,
+    conviction,
+    strike: Number(raw.strike_price || raw.strike) || 0,
+    expiration: raw.expiry_date || raw.expiration || '—',
+    dte,
+    atmProximity,
+    dteWeight,
+    deltaExposureShares,
+    gammaImpactRaw,
+    gammaScore: 0,
+    source: raw.source || 'UNKNOWN',
+  };
+}
+
+function normalizeGammaScores(trades) {
+  const knownImpacts = trades
+    .filter(t => [FLOW_SIDE.ASK, FLOW_SIDE.BID].includes(t.side))
+    .map(t => Math.log1p(t.gammaImpactRaw));
+  const maxLogImpact = Math.max(1, ...knownImpacts);
+  return trades.map(t => ({
+    ...t,
+    gammaScore: Math.round(100 * Math.log1p(t.gammaImpactRaw) / maxLogImpact),
+  }));
+}
+
+function aggregateOptionsFlow(trades) {
+  const totals = trades.reduce((acc, trade) => {
+    acc.totalPremium += trade.premium;
+    if (trade.direction === FLOW_DIRECTION.BULLISH) {
+      acc.bullishWeighted += trade.weightedPremium;
+      acc.knownPremium += trade.premium;
+    } else if (trade.direction === FLOW_DIRECTION.BEARISH) {
+      acc.bearishWeighted += trade.weightedPremium;
+      acc.knownPremium += trade.premium;
+    } else {
+      acc.unknownPremium += trade.premium;
+      acc.unknownCount += 1;
+    }
+
+    const gammaImpact = trade.gammaImpactRaw * trade.conviction;
+    if (trade.dealerGamma === DEALER_GAMMA.SHORT) acc.shortGammaImpact += gammaImpact;
+    if (trade.dealerGamma === DEALER_GAMMA.LONG) acc.longGammaImpact += gammaImpact;
+    return acc;
+  }, {
+    totalPremium:0, knownPremium:0, unknownPremium:0, unknownCount:0,
+    bullishWeighted:0, bearishWeighted:0,
+    shortGammaImpact:0, longGammaImpact:0,
+  });
+
+  const directionalDenom = totals.bullishWeighted + totals.bearishWeighted;
+  const directionBalance = directionalDenom > 0
+    ? (totals.bullishWeighted - totals.bearishWeighted) / directionalDenom : 0;
+  const gammaDenom = totals.shortGammaImpact + totals.longGammaImpact;
+  const gammaBalance = gammaDenom > 0
+    ? (totals.shortGammaImpact - totals.longGammaImpact) / gammaDenom : 0;
+
+  const directionVerdict = directionalDenom === 0 ? 'UNKNOWN'
+    : directionBalance > 0.15 ? 'BULLISH'
+    : directionBalance < -0.15 ? 'BEARISH' : 'MIXED';
+  const gammaVerdict = gammaDenom === 0 ? 'UNKNOWN'
+    : gammaBalance > 0.15 ? 'AMPLIFYING'
+    : gammaBalance < -0.15 ? 'SUPPRESSING' : 'MIXED';
+
+  return {
+    ...totals,
+    directionBalance,
+    gammaBalance,
+    directionVerdict,
+    gammaVerdict,
+    knownSideCoverage: totals.totalPremium > 0 ? totals.knownPremium / totals.totalPremium : 0,
+  };
+}
+
+function aggregateByTicker(trades) {
+  const map = {};
+  trades.forEach(t => {
+    if (!map[t.ticker]) map[t.ticker] = {
+      ticker:t.ticker, totalPremium:0, knownPremium:0, unknownPremium:0,
+      bullishWeighted:0, bearishWeighted:0, shortGammaImpact:0, longGammaImpact:0,
+      contracts:0,
+    };
+    const x = map[t.ticker];
+    x.totalPremium += t.premium;
+    x.contracts += t.size;
+    if (t.direction === FLOW_DIRECTION.BULLISH) { x.bullishWeighted += t.weightedPremium; x.knownPremium += t.premium; }
+    else if (t.direction === FLOW_DIRECTION.BEARISH) { x.bearishWeighted += t.weightedPremium; x.knownPremium += t.premium; }
+    else x.unknownPremium += t.premium;
+    const gammaImpact = t.gammaImpactRaw * t.conviction;
+    if (t.dealerGamma === DEALER_GAMMA.SHORT) x.shortGammaImpact += gammaImpact;
+    if (t.dealerGamma === DEALER_GAMMA.LONG) x.longGammaImpact += gammaImpact;
+  });
+
+  return Object.values(map).map(x => {
+    const dirDen = x.bullishWeighted + x.bearishWeighted;
+    const dirBal = dirDen ? (x.bullishWeighted - x.bearishWeighted) / dirDen : 0;
+    const gammaDen = x.shortGammaImpact + x.longGammaImpact;
+    const gammaBal = gammaDen ? (x.shortGammaImpact - x.longGammaImpact) / gammaDen : 0;
+    return {
+      ...x,
+      direction: !dirDen ? 'UNKNOWN' : dirBal > 0.15 ? 'BULLISH' : dirBal < -0.15 ? 'BEARISH' : 'MIXED',
+      gammaRegime: !gammaDen ? 'UNKNOWN' : gammaBal > 0.15 ? 'AMPLIFY' : gammaBal < -0.15 ? 'SUPPRESS' : 'MIXED',
+      coverage: x.totalPremium ? x.knownPremium / x.totalPremium : 0,
+      directionBalance: dirBal,
+      gammaBalance: gammaBal,
+    };
+  }).sort((a,b) => b.totalPremium - a.totalPremium);
+}
+
+function analyzeOptionsFlow(rawTrades) {
+  const normalized = (rawTrades || [])
+    .map(normalizeFlowTrade)
+    .filter(t => t.ticker !== '—' && ['CALL','PUT'].includes(t.optionType) && t.dte > 0 && t.delta >= 0 && t.delta <= 1);
+  const trades = normalizeGammaScores(normalized)
+    .sort((a,b) => (b.weightedPremium + b.gammaImpactRaw) - (a.weightedPremium + a.gammaImpactRaw));
+  return {
+    trades,
+    knownTrades: trades.filter(t => t.direction !== FLOW_DIRECTION.UNKNOWN),
+    unknownTrades: trades.filter(t => t.direction === FLOW_DIRECTION.UNKNOWN),
+    summary: aggregateOptionsFlow(trades),
+    tickers: aggregateByTicker(trades),
+  };
+}
+
+function parseAgentJson(text) {
+  if (!text) return null;
+  const cleaned = String(text).replace(/```json/gi,'').replace(/```/g,'').trim();
+  try { return JSON.parse(cleaned); } catch (_) {}
+  const start = cleaned.indexOf('{');
+  const end = cleaned.lastIndexOf('}');
+  if (start >= 0 && end > start) {
+    try { return JSON.parse(cleaned.slice(start, end + 1)); } catch (_) {}
+  }
+  return null;
+}
+
+function buildDualAgentContext(analysis, tickerData) {
+  const topDirectional = [...analysis.knownTrades]
+    .sort((a,b) => b.weightedPremium - a.weightedPremium)
+    .slice(0,24)
+    .map(t => ({
+      ticker:t.ticker, option:t.optionType, side:t.side, direction:t.direction,
+      premium:Math.round(t.premium), weightedPremium:Math.round(t.weightedPremium),
+      conviction:Number(t.conviction.toFixed(2)), delta:Number(t.delta.toFixed(3)),
+      strike:t.strike, expiration:t.expiration, dte:t.dte,
+    }));
+  const topGamma = [...analysis.knownTrades]
+    .sort((a,b) => b.gammaImpactRaw - a.gammaImpactRaw)
+    .slice(0,24)
+    .map(t => ({
+      ticker:t.ticker, option:t.optionType, side:t.side,
+      dealerGamma:t.dealerGamma, gammaScore:t.gammaScore,
+      atmProximity:Number(t.atmProximity.toFixed(2)), dteWeight:Number(t.dteWeight.toFixed(2)),
+      deltaExposureShares:Math.round(t.deltaExposureShares), premium:Math.round(t.premium),
+    }));
+  const prices = {};
+  analysis.tickers.slice(0,20).forEach(t => {
+    const d = tickerData?.[t.ticker];
+    if (d?.price != null) prices[t.ticker] = { price:d.price, changePct:d.change, preMarketPct:d.preChange };
+  });
+  return {
+    generatedAt:new Date().toISOString(),
+    methodology:{
+      directional:'CALL ask bullish; CALL bid bearish; PUT ask bearish; PUT bid bullish; MID unknown',
+      dealerGamma:'customer buy/ASK => likely dealer short gamma; customer sell/BID => likely dealer long gamma',
+      gammaProxy:'size × 100 × |delta| × ATM proximity × DTE weight',
+      weightedTotals:'premium × conviction; MID excluded from directional totals',
+      expirationFilter:'DTE <= 0 excluded',
+    },
+    summary:analysis.summary,
+    tickerSummaries:analysis.tickers.slice(0,20),
+    topDirectional,
+    topGamma,
+    currentPrices:prices,
+  };
+}
+
+function buildAgentPrompt(context, role) {
+  return `You are ${role}. Analyze the supplied deterministic options-flow dataset. Do not reverse or replace the deterministic classification rules. Do not infer a dealer position for MID trades. Distinguish directional customer flow from the dealer gamma regime. Do not invent live prices or news that are not in the input. Treat the result as decision support, not certainty.\n\nReturn VALID JSON ONLY with this exact shape:\n{\n  "direction": "BULLISH|BEARISH|MIXED|UNKNOWN",\n  "direction_confidence": 0,\n  "gamma_regime": "AMPLIFYING|SUPPRESSING|MIXED|UNKNOWN",\n  "gamma_confidence": 0,\n  "headline": "Greek concise headline",\n  "evidence": ["Greek evidence 1", "Greek evidence 2"],\n  "risks": ["Greek risk 1", "Greek risk 2"],\n  "top_setups": [{"ticker":"", "bias":"BULLISH|BEARISH|WATCH", "rationale":"", "entry_condition":"", "invalidation":""}],\n  "data_quality_comment": "Greek comment"\n}\n\nDATA:\n${JSON.stringify(context)}`;
+}
+
+function AgentResultCard({ title, accent, result, raw, loading, error, badge }) {
+  const valueColor = v => v === 'BULLISH' || v === 'AMPLIFYING' ? 'var(--green)' : v === 'BEARISH' || v === 'SUPPRESSING' ? 'var(--red)' : 'var(--amber)';
+  return (
+    <div style={{background:'var(--bg2)',border:`1px solid ${accent}`,borderRadius:4,padding:'12px 14px',minHeight:180}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+        <div style={{fontSize:10,fontWeight:700,color:accent}}>{title}</div>
+        <span className="tb-pill" style={{borderColor:accent,color:accent,background:'transparent'}}>{badge}</span>
+      </div>
+      {loading && <div className="ai-loading"><div className="ai-dot"/><div className="ai-dot"/><div className="ai-dot"/><span>Ανάλυση...</span></div>}
+      {!loading && error && <div style={{fontSize:9,color:'var(--red)',lineHeight:1.7}}>❌ {error}</div>}
+      {!loading && !error && result && (
+        <div style={{fontSize:9,lineHeight:1.7}}>
+          <div style={{fontSize:12,fontWeight:700,color:'var(--text)',marginBottom:6}}>{result.headline || '—'}</div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6,marginBottom:8}}>
+            <div style={{background:'var(--bg3)',padding:'6px 8px',borderRadius:3}}><span style={{color:'var(--muted)'}}>FLOW</span><br/><b style={{color:valueColor(result.direction)}}>{result.direction}</b> · {result.direction_confidence ?? '—'}%</div>
+            <div style={{background:'var(--bg3)',padding:'6px 8px',borderRadius:3}}><span style={{color:'var(--muted)'}}>GAMMA</span><br/><b style={{color:valueColor(result.gamma_regime)}}>{result.gamma_regime}</b> · {result.gamma_confidence ?? '—'}%</div>
+          </div>
+          {(result.evidence || []).slice(0,4).map((x,i)=><div key={i}>• {x}</div>)}
+          {(result.risks || []).length > 0 && <div style={{marginTop:7,color:'var(--amber)'}}>⚠ {(result.risks || []).slice(0,3).join(' · ')}</div>}
+          {(result.top_setups || []).slice(0,3).map((x,i)=><div key={`s${i}`} style={{marginTop:7,background:'var(--bg3)',padding:'6px 8px',borderRadius:3}}><b style={{color:'var(--cyan)'}}>{x.ticker} {x.bias}</b> — {x.rationale}<br/><span style={{color:'var(--muted)'}}>Trigger:</span> {x.entry_condition} · <span style={{color:'var(--muted)'}}>Invalidation:</span> {x.invalidation}</div>)}
+          {result.data_quality_comment && <div style={{marginTop:7,color:'var(--muted)'}}>Data quality: {result.data_quality_comment}</div>}
+        </div>
+      )}
+      {!loading && !error && !result && raw && <div className="ai-output" style={{minHeight:100,maxHeight:360,overflowY:'auto'}}>{raw}</div>}
+      {!loading && !error && !result && !raw && <div style={{fontSize:9,color:'var(--dim)',padding:'15px 0'}}>Δεν έχει τρέξει ακόμα.</div>}
+    </div>
+  );
+}
+
+function DeltaSignalAnalyzer({ flowTrades, tickerData, onAddAlert, apiStatus }) {
+  const analysis = useMemo(() => analyzeOptionsFlow(flowTrades), [flowTrades]);
+  const [directionLimit, setDirectionLimit] = useState(20);
+  const [gammaLimit, setGammaLimit] = useState(20);
+  const [showUnknown, setShowUnknown] = useState(false);
+  const [ai, setAi] = useState({
+    running:false,
+    claudeRaw:'', claudeResult:null, claudeError:'',
+    openaiRaw:'', openaiResult:null, openaiError:'',
+    consensusRaw:'', consensusResult:null, consensusError:'',
+  });
+  const lastAutoSignature = useRef('');
+
+  const signature = useMemo(() => analysis.trades.slice(0,80).map(t => `${t.id}:${t.premium}:${t.side}`).join('|'), [analysis]);
+
+  async function runDualAI(auto=false) {
+    if (!analysis.trades.length) return;
+    if (!window._CLAUDE_KEY && !window._OPENAI_KEY) {
+      setAi(prev => ({...prev,claudeError:'Χρειάζεται Claude key.',openaiError:'Χρειάζεται OpenAI key.'}));
+      return;
+    }
+    setAi({running:true,claudeRaw:'',claudeResult:null,claudeError:'',openaiRaw:'',openaiResult:null,openaiError:'',consensusRaw:'',consensusResult:null,consensusError:''});
+    const context = buildDualAgentContext(analysis, tickerData);
+    const claudePrompt = buildAgentPrompt(context, 'the PRIMARY senior options-flow analyst. Be decisive but explicitly respect data-quality limits');
+    const openaiPrompt = buildAgentPrompt(context, 'an INDEPENDENT audit analyst providing a second opinion. Challenge weak assumptions and look for alternative interpretations');
+
+    const claudePromise = window._CLAUDE_KEY
+      ? callClaude(claudePrompt, 4200, 'Return valid JSON only. You are the primary analyst.').then(raw => ({raw,result:parseAgentJson(raw)}))
+      : Promise.reject(new Error('Claude key δεν έχει οριστεί.'));
+    const openaiPromise = window._OPENAI_KEY
+      ? callOpenAI(openaiPrompt, 4200, 'Return valid JSON only. Act as an independent second-opinion options-flow analyst.').then(raw => ({raw,result:parseAgentJson(raw)}))
+      : Promise.reject(new Error('OpenAI key δεν έχει οριστεί.'));
+
+    const [claudeSettled, openaiSettled] = await Promise.allSettled([claudePromise, openaiPromise]);
+    const next = {
+      running:false,
+      claudeRaw:claudeSettled.status==='fulfilled'?claudeSettled.value.raw:'',
+      claudeResult:claudeSettled.status==='fulfilled'?claudeSettled.value.result:null,
+      claudeError:claudeSettled.status==='rejected'?claudeSettled.reason.message:'',
+      openaiRaw:openaiSettled.status==='fulfilled'?openaiSettled.value.raw:'',
+      openaiResult:openaiSettled.status==='fulfilled'?openaiSettled.value.result:null,
+      openaiError:openaiSettled.status==='rejected'?openaiSettled.reason.message:'',
+      consensusRaw:'', consensusResult:null, consensusError:'',
+    };
+    setAi(next);
+
+    if (window._CLAUDE_KEY && claudeSettled.status==='fulfilled' && openaiSettled.status==='fulfilled') {
+      try {
+        setAi(prev => ({...prev,running:true}));
+        const synthesisPrompt = `You are the lead Claude agent. Reconcile two independent analyses against the deterministic data. Claude remains the primary tool, but acknowledge valid objections from the OpenAI second opinion. Return VALID JSON ONLY with this shape:\n{\n "agreement":"AGREE|PARTIAL|DISAGREE",\n "final_direction":"BULLISH|BEARISH|MIXED|UNKNOWN",\n "final_gamma_regime":"AMPLIFYING|SUPPRESSING|MIXED|UNKNOWN",\n "final_confidence":0,\n "headline":"Greek final headline",\n "agreed_points":[""],\n "disagreements":[""],\n "decision_support":[""],\n "do_not_overinterpret":"Greek warning"\n}\n\nDETERMINISTIC SUMMARY:\n${JSON.stringify(context.summary)}\n\nCLAUDE PRIMARY:\n${claudeSettled.value.raw}\n\nOPENAI SECOND OPINION:\n${openaiSettled.value.raw}`;
+        const consensusRaw = await callClaude(synthesisPrompt, 3200, 'Return valid JSON only. Reconcile the two agents without inventing data.');
+        setAi(prev => ({...prev,running:false,consensusRaw,consensusResult:parseAgentJson(consensusRaw)}));
+      } catch (error) {
+        setAi(prev => ({...prev,running:false,consensusError:error.message}));
+      }
+    }
+
+    if (!auto) onAddAlert?.('div', `🤖 Dual AI analysis ολοκληρώθηκε @ ${now_gr()}`);
+  }
+
+  useEffect(() => {
+    const isImportedCsv = (flowTrades || []).some(t => t.source === 'BARCHART_CSV');
+    if (!isImportedCsv || !signature || signature === lastAutoSignature.current || !window._CLAUDE_KEY) return;
+    lastAutoSignature.current = signature;
+    runDualAI(true);
+  }, [signature, apiStatus?.claude, apiStatus?.openai]);
+
+  const fmtMoney = v => v>=1e9?`$${(v/1e9).toFixed(2)}B`:v>=1e6?`$${(v/1e6).toFixed(1)}M`:v>=1000?`$${(v/1000).toFixed(0)}K`:`$${Math.round(v)}`;
+  const pct = v => `${Math.round((v || 0) * 100)}%`;
+  const dirColor = d => d==='BULLISH'?'var(--green)':d==='BEARISH'?'var(--red)':'var(--amber)';
+  const gammaColor = g => g==='AMPLIFYING' || g==='SHORT_GAMMA'?'var(--purple)':g==='SUPPRESSING' || g==='LONG_GAMMA'?'var(--cyan)':'var(--amber)';
+  const directionalRows = [...analysis.knownTrades].sort((a,b)=>b.weightedPremium-a.weightedPremium).slice(0,directionLimit);
+  const gammaRows = [...analysis.knownTrades].sort((a,b)=>b.gammaImpactRaw-a.gammaImpactRaw).slice(0,gammaLimit);
+  const s = analysis.summary;
+
+  return (
+    <div>
+      <div style={{background:'var(--bg3)',border:'1px solid var(--border2)',borderRadius:4,padding:'11px 14px',marginBottom:12,fontSize:9,color:'var(--muted)',lineHeight:1.8}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:5}}>
+          <span style={{color:'var(--purple)',fontWeight:700}}>⚡ OPTIONS FLOW INTELLIGENCE — deterministic engine + dual AI</span>
+          <span style={{fontSize:8,color:'var(--dim)'}}>DTE≤0 excluded · MID never becomes BID</span>
+        </div>
+        <span style={{color:'var(--green)'}}>Directional panel</span> = τι πιθανώς θέλει ο customer · <span style={{color:'var(--purple)'}}>Dealer gamma panel</span> = πιθανή επίδραση του hedging στη volatility · <span style={{color:'var(--amber)'}}>MID</span> = UNKNOWN, όχι signal.
+      </div>
+
+      {!analysis.trades.length && (
+        <div style={{background:'var(--bg2)',border:'1px solid var(--amber)',borderRadius:4,padding:'24px',textAlign:'center'}}>
+          <div style={{fontSize:14,color:'var(--amber)',marginBottom:8}}>📥 Φόρτωσε ενεργό Barchart CSV</div>
+          <div style={{fontSize:9,color:'var(--muted)'}}>Τα contracts με DTE ≤ 0 απορρίπτονται. Χρειάζονται Side, Type, Delta, Size, Premium και DTE.</div>
+        </div>
+      )}
+
+      {analysis.trades.length > 0 && (
+        <div>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:8,marginBottom:12}}>
+            <div style={{background:'var(--bg2)',border:`2px solid ${dirColor(s.directionVerdict)}`,borderRadius:4,padding:'11px',textAlign:'center'}}>
+              <div style={{fontSize:8,color:'var(--muted)'}}>WEIGHTED DIRECTION</div>
+              <div style={{fontSize:18,fontWeight:700,color:dirColor(s.directionVerdict)}}>{s.directionVerdict}</div>
+              <div style={{fontSize:8,color:'var(--dim)'}}>Bull {fmtMoney(s.bullishWeighted)} · Bear {fmtMoney(s.bearishWeighted)}</div>
+            </div>
+            <div style={{background:'var(--bg2)',border:`2px solid ${gammaColor(s.gammaVerdict)}`,borderRadius:4,padding:'11px',textAlign:'center'}}>
+              <div style={{fontSize:8,color:'var(--muted)'}}>DEALER GAMMA REGIME</div>
+              <div style={{fontSize:18,fontWeight:700,color:gammaColor(s.gammaVerdict)}}>{s.gammaVerdict}</div>
+              <div style={{fontSize:8,color:'var(--dim)'}}>Short vs Long gamma proxy</div>
+            </div>
+            <div style={{background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:4,padding:'11px',textAlign:'center'}}>
+              <div style={{fontSize:8,color:'var(--muted)'}}>KNOWN-SIDE COVERAGE</div>
+              <div style={{fontSize:18,fontWeight:700,color:s.knownSideCoverage>=.6?'var(--green)':s.knownSideCoverage>=.3?'var(--amber)':'var(--red)'}}>{pct(s.knownSideCoverage)}</div>
+              <div style={{fontSize:8,color:'var(--dim)'}}>Unknown premium {fmtMoney(s.unknownPremium)}</div>
+            </div>
+            <div style={{background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:4,padding:'11px',textAlign:'center'}}>
+              <div style={{fontSize:8,color:'var(--muted)'}}>ACTIVE CONTRACT ROWS</div>
+              <div style={{fontSize:18,fontWeight:700,color:'var(--text)'}}>{analysis.trades.length}</div>
+              <div style={{fontSize:8,color:'var(--dim)'}}>{analysis.knownTrades.length} known · {analysis.unknownTrades.length} mid/unknown</div>
+            </div>
+          </div>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:9,marginBottom:12}}>
+            <div style={{background:'var(--bg2)',border:'1px solid var(--green)',borderRadius:4,padding:'11px',overflow:'hidden'}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+                <div><div style={{fontSize:10,fontWeight:700,color:'var(--green)'}}>PANEL A — DIRECTIONAL SENTIMENT</div><div style={{fontSize:8,color:'var(--dim)'}}>Customer intent · premium × conviction</div></div>
+                <button className="btn" onClick={()=>setDirectionLimit(x=>x===20?50:20)}>{directionLimit===20?'TOP 50':'TOP 20'}</button>
+              </div>
+              <div style={{overflowX:'auto',maxHeight:430,overflowY:'auto'}}>
+                <table className="ftable" style={{minWidth:650}}>
+                  <thead><tr><th>TICKER</th><th>FLOW</th><th>OPTION</th><th>SIDE</th><th>PREMIUM</th><th>CONV.</th><th>WEIGHTED</th></tr></thead>
+                  <tbody>{directionalRows.map(t=><tr key={t.id}>
+                    <td style={{fontWeight:700,color:'var(--amber)'}}>{t.ticker}</td>
+                    <td style={{fontWeight:700,color:dirColor(t.direction)}}>{t.direction==='BULLISH'?'🟢':'🔴'} {t.direction}</td>
+                    <td className={t.optionType==='PUT'?'type-put':'type-call'}>{t.optionType} ${t.strike}</td>
+                    <td>{t.side}</td><td className="prem">{fmtMoney(t.premium)}</td>
+                    <td>{Math.round(t.conviction*100)}%</td><td>{fmtMoney(t.weightedPremium)}</td>
+                  </tr>)}</tbody>
+                </table>
+              </div>
+            </div>
+
+            <div style={{background:'var(--bg2)',border:'1px solid var(--purple)',borderRadius:4,padding:'11px',overflow:'hidden'}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+                <div><div style={{fontSize:10,fontWeight:700,color:'var(--purple)'}}>PANEL B — DEALER GAMMA POSITION</div><div style={{fontSize:8,color:'var(--dim)'}}>Gamma-impact proxy, όχι πραγματικό exchange gamma</div></div>
+                <button className="btn" onClick={()=>setGammaLimit(x=>x===20?50:20)}>{gammaLimit===20?'TOP 50':'TOP 20'}</button>
+              </div>
+              <div style={{overflowX:'auto',maxHeight:430,overflowY:'auto'}}>
+                <table className="ftable" style={{minWidth:680}}>
+                  <thead><tr><th>TICKER</th><th>DEALER</th><th>VOL EFFECT</th><th>Γ SCORE</th><th>ATM</th><th>DTE</th><th>Δ EXPOSURE</th></tr></thead>
+                  <tbody>{gammaRows.map(t=><tr key={t.id}>
+                    <td style={{fontWeight:700,color:'var(--amber)'}}>{t.ticker}</td>
+                    <td style={{fontWeight:700,color:gammaColor(t.dealerGamma)}}>{t.gammaScore>=65?(t.dealerGamma==='SHORT_GAMMA'?'⚡ HIGH Γ — SHORT':'🛡️ HIGH Γ — LONG'):(t.dealerGamma==='SHORT_GAMMA'?'LIKELY SHORT Γ':'LIKELY LONG Γ')}</td>
+                    <td style={{color:gammaColor(t.dealerGamma)}}>{t.dealerGamma==='SHORT_GAMMA'?'AMPLIFY':'SUPPRESS'}</td>
+                    <td><b style={{color:t.gammaScore>=70?'var(--red)':t.gammaScore>=50?'var(--amber)':'var(--muted)'}}>{t.gammaScore}</b>/100</td>
+                    <td>{Math.round(t.atmProximity*100)}%</td><td>{t.dte}</td><td>{Math.round(t.deltaExposureShares).toLocaleString()}</td>
+                  </tr>)}</tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div style={{background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:4,padding:'10px 12px',marginBottom:12}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:7}}>
+              <div className="section-lbl" style={{marginBottom:0}}>TICKER-WEIGHTED TOTALS</div>
+              <button className={`btn ${showUnknown?'btn-primary':''}`} onClick={()=>setShowUnknown(x=>!x)}>⚠ UNKNOWN / MID ({analysis.unknownTrades.length})</button>
+            </div>
+            <div style={{overflowX:'auto'}}><table className="ftable" style={{minWidth:800}}><thead><tr><th>TICKER</th><th>DIRECTION</th><th>BULL W.</th><th>BEAR W.</th><th>GAMMA</th><th>COVERAGE</th><th>TOTAL PREMIUM</th></tr></thead><tbody>
+              {analysis.tickers.slice(0,25).map(t=><tr key={t.ticker}><td style={{fontWeight:700,color:'var(--amber)'}}>{t.ticker}</td><td style={{color:dirColor(t.direction),fontWeight:700}}>{t.direction}</td><td>{fmtMoney(t.bullishWeighted)}</td><td>{fmtMoney(t.bearishWeighted)}</td><td style={{color:gammaColor(t.gammaRegime)}}>{t.gammaRegime}</td><td>{pct(t.coverage)}</td><td className="prem">{fmtMoney(t.totalPremium)}</td></tr>)}
+            </tbody></table></div>
+          </div>
+
+          {showUnknown && <div style={{background:'var(--bg2)',border:'1px solid var(--amber)',borderRadius:4,padding:'10px 12px',marginBottom:12}}>
+            <div style={{fontSize:9,color:'var(--amber)',fontWeight:700,marginBottom:6}}>⚠ MID / UNKNOWN — εμφανίζονται μόνο για data quality, όχι ως directional signals</div>
+            <div style={{maxHeight:260,overflowY:'auto'}}><table className="ftable"><thead><tr><th>TICKER</th><th>OPTION</th><th>SIDE</th><th>PREMIUM</th><th>DELTA</th><th>DTE</th></tr></thead><tbody>{analysis.unknownTrades.slice(0,60).map(t=><tr key={t.id}><td>{t.ticker}</td><td>{t.optionType} ${t.strike}</td><td style={{color:'var(--amber)'}}>{t.side}</td><td>{fmtMoney(t.premium)}</td><td>{t.delta.toFixed(2)}</td><td>{t.dte}</td></tr>)}</tbody></table></div>
+          </div>}
+
+          <div style={{background:'var(--bg3)',border:'1px solid var(--border2)',borderRadius:4,padding:'11px 12px',marginBottom:12}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
+              <div style={{fontSize:10,fontWeight:700,color:'var(--purple)'}}>🤖 DUAL AGENT ANALYSIS</div>
+              <span className="tb-pill pill-purple">CLAUDE MAIN</span>
+              <span className="tb-pill pill-cyan">OPENAI 2nd OPINION</span>
+              <button className="btn btn-ai" onClick={()=>runDualAI(false)} disabled={ai.running} style={{marginLeft:'auto'}}>{ai.running?'⟳ AGENTS RUNNING...':'▶ RUN BOTH AGENTS'}</button>
+            </div>
+            <div style={{fontSize:8,color:'var(--dim)',marginTop:5}}>Οι δύο πρώτες αναλύσεις εκτελούνται ανεξάρτητα. Όταν ολοκληρωθούν και οι δύο, ο Claude κάνει τελική σύνθεση.</div>
+          </div>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:9,marginBottom:9}}>
+            <AgentResultCard title="CLAUDE PRIMARY ANALYSIS" accent="var(--purple)" badge="MAIN" result={ai.claudeResult} raw={ai.claudeRaw} loading={ai.running&&!ai.claudeRaw&&!ai.claudeError} error={ai.claudeError}/>
+            <AgentResultCard title="OPENAI / CHATGPT SECOND OPINION" accent="var(--cyan)" badge="INDEPENDENT" result={ai.openaiResult} raw={ai.openaiRaw} loading={ai.running&&!ai.openaiRaw&&!ai.openaiError} error={ai.openaiError}/>
+          </div>
+
+          {(ai.consensusResult || ai.consensusRaw || ai.consensusError || ai.running) && <div style={{background:'var(--bg2)',border:'2px solid var(--amber)',borderRadius:4,padding:'12px 14px'}}>
+            <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}><div style={{fontSize:10,fontWeight:700,color:'var(--amber)'}}>CLAUDE FINAL SYNTHESIS</div><span className="tb-pill pill-amber">FINAL ARBITER</span></div>
+            {ai.running && !ai.consensusRaw && <div className="ai-loading"><div className="ai-dot"/><div className="ai-dot"/><div className="ai-dot"/><span>Σύνθεση των δύο γνωμών...</span></div>}
+            {ai.consensusError && <div style={{color:'var(--red)',fontSize:9}}>❌ {ai.consensusError}</div>}
+            {ai.consensusResult && <div style={{fontSize:9,lineHeight:1.8}}>
+              <div style={{fontSize:14,fontWeight:700,color:'var(--text)',marginBottom:6}}>{ai.consensusResult.headline}</div>
+              <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:7}}><span className="tb-pill pill-amber">{ai.consensusResult.agreement}</span><span className="tb-pill" style={{color:dirColor(ai.consensusResult.final_direction),borderColor:dirColor(ai.consensusResult.final_direction)}}>{ai.consensusResult.final_direction}</span><span className="tb-pill pill-purple">{ai.consensusResult.final_gamma_regime}</span><span className="tb-pill pill-cyan">CONF {ai.consensusResult.final_confidence}%</span></div>
+              {(ai.consensusResult.agreed_points||[]).map((x,i)=><div key={i}>✓ {x}</div>)}
+              {(ai.consensusResult.disagreements||[]).length>0&&<div style={{marginTop:6,color:'var(--amber)'}}>Διαφωνίες: {(ai.consensusResult.disagreements||[]).join(' · ')}</div>}
+              {(ai.consensusResult.decision_support||[]).map((x,i)=><div key={`d${i}`} style={{marginTop:5}}>→ {x}</div>)}
+              {ai.consensusResult.do_not_overinterpret&&<div style={{marginTop:7,color:'var(--muted)'}}>⚠ {ai.consensusResult.do_not_overinterpret}</div>}
+            </div>}
+            {!ai.consensusResult && ai.consensusRaw && <div className="ai-output">{ai.consensusRaw}</div>}
+          </div>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ==================== MAIN APP ====================
+function App() {
+  const [tab, setTab] = useState('watchlist');
+  const [clockGR, setClockGR] = useState(now_gr());
+  const [clockET, setClockET] = useState(now_et());
+  const [marketOpen, setMarketOpen] = useState(isMarketOpen());
+  const [warnClose, setWarnClose] = useState(false);
+  const [minsLeft, setMinsLeft] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const [tickers, setTickers] = useState(['SOXL','SOXS','NAIL','TQQQ','QQQ','SPY']);
+  const [newTicker, setNewTicker] = useState('');
+  const [tickerData, setTickerData] = useState({
+    SOXL:{ price:171.65, change:3.85, vol:'15.05M', range:'158.87-175.48', putFlow:100, callFlow:0, signals:['DIVERGENCE','HIGH VOL'], type:'bull', preChange:-3.80 },
+    SOXS:{ price:4.62, change:-3.85, vol:'183.06M', range:'4.50-4.99', putFlow:40, callFlow:60, signals:['HIGH VOL'], type:'bear', preChange:3.75 },
+    NAIL:{ price:40.33, change:-9.97, vol:'2.1M', range:'37.5-44.5', putFlow:65, callFlow:35, signals:['BEAR FLOW','HIGH VOL'], type:'bull', preChange:0 },
+    TQQQ:{ price:72.23, change:-5.48, vol:'45M', range:'68-75', putFlow:75, callFlow:25, signals:['BEAR FLOW'], type:'bull', preChange:0 },
+    QQQ:{ price:708.39, change:-0.15, vol:'7.69M', range:'704.94-709.80', putFlow:60, callFlow:40, signals:[], type:'bull', preChange:0 },
+    SPY:{ price:744.09, change:-0.48, vol:'7.59M', range:'742.64-744.91', putFlow:55, callFlow:45, signals:[], type:'bull', preChange:0 },
+  });
+
+  // Twelve Data live fetch
+  const fetchLivePrices = useCallback(async (tickerList) => {
+    const key = window._TD_KEY || TD_KEY;
+    if (!key) return;
+    try {
+      const syms = tickerList.join(',');
+      const r = await fetch(`https://api.twelvedata.com/quote?symbol=${syms}&apikey=${key}`);
+      const data = await r.json();
+      setTickerData(prev => {
+        const updated = { ...prev };
+        // If single ticker, API returns object directly; multiple returns object keyed by symbol
+        const entries = tickerList.length === 1
+          ? [[tickerList[0], data]]
+          : Object.entries(data);
+        entries.forEach(([sym, q]) => {
+          if (!q || q.status === 'error' || !q.close) return;
+          const price = parseFloat(q.close);
+          const open = parseFloat(q.open);
+          const high = parseFloat(q.high);
+          const low = parseFloat(q.low);
+          const prevClose = parseFloat(q.previous_close);
+          const change = prevClose ? ((price - prevClose) / prevClose) * 100 : 0;
+          const vol = q.volume ? (parseInt(q.volume) >= 1e6
+            ? (parseInt(q.volume)/1e6).toFixed(2)+'M'
+            : (parseInt(q.volume)/1e3).toFixed(0)+'K') : '—';
+          // Detect divergence: price up but existing put flow > 70%
+          const existing = prev[sym] || {};
+          const sigs = [...(existing.signals||[]).filter(s=>!['LIVE','HIGH VOL','DIVERGENCE'].includes(s))];
+          if (Math.abs(change) > 3) sigs.push('HIGH VOL');
+          if (change > 1 && (existing.putFlow||0) > 70) sigs.push('DIVERGENCE');
+          updated[sym] = {
+            ...existing,
+            price, change, vol,
+            range: `${low.toFixed(2)}-${high.toFixed(2)}`,
+            open, prevClose,
+            signals: [...new Set(sigs)],
+            liveUpdated: true,
+          };
+        });
+        return updated;
+      });
+    } catch(e) {
+      console.warn('Twelve Data fetch error:', e);
+    }
+  }, []);
+
+  // Auto-fetch on mount and every 15 min
+  useEffect(() => {
+    const key = window._TD_KEY || TD_KEY;
+    if (!key) return;
+    fetchLivePrices(tickers);
+    const interval = setInterval(() => fetchLivePrices(tickers), 15 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [tickers, fetchLivePrices]);
+  const [flowTrades, setFlowTrades] = useState([
+    { ticker_symbol:'SOXL', put_call:'PUT', side:'ASK', execution_side:'ASK', is_ask_side:true, strike_price:160, expiry_date:'2026-07-10', total_premium:64000, dte:2, open_interest:40 },
+    { ticker_symbol:'SOXL', put_call:'PUT', side:'ASK', execution_side:'ASK', is_ask_side:true, strike_price:155, expiry_date:'2026-07-10', total_premium:41000, dte:2, open_interest:30 },
+    { ticker_symbol:'SOXL', put_call:'PUT', side:'ASK', execution_side:'ASK', is_ask_side:true, strike_price:165, expiry_date:'2027-01-15', total_premium:398000, dte:191, open_interest:100 },
+    { ticker_symbol:'SPY', put_call:'PUT', side:'ASK', execution_side:'ASK', is_ask_side:true, strike_price:730, expiry_date:'2026-08', total_premium:28000, dte:45, open_interest:500 },
+    { ticker_symbol:'QQQ', put_call:'PUT', side:'ASK', execution_side:'ASK', is_ask_side:true, strike_price:695, expiry_date:'2026-08', total_premium:19000, dte:45, open_interest:300 },
+    { ticker_symbol:'PLUG', put_call:'PUT', side:'ASK', execution_side:'ASK', is_ask_side:true, strike_price:2.50, expiry_date:'2026-08', total_premium:8000, dte:45, open_interest:200 },
+  ]);
+  const [trades, setTrades] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('trades_v3')||'[]'); } catch { return []; }
+  });
+  const [capital, setCapital] = useState(() => {
+    const s = localStorage.getItem('capital_v3'); return s ? parseFloat(s) : 16;
+  });
+  const [alerts, setAlerts] = useState([
+    { type:'div', time:'ΧΘΕΣ', msg:'⚡ SOXL DIVERGENCE: +3.23% price + 10 puts / 0 calls → BEARISH confirmed' },
+    { type:'whale', time:'PRE-MKT', msg:'🐋 SOXL $398K put Jan-2027 — institutional θέση' },
+    { type:'crit', time:'ΧΘΕΣ', msg:'🔴 Iran Hormuz event — SOXL -15% | SOXS +15%' },
+  ]);
+  const [apiStatus, setApiStatus] = useState({ td: !!TD_KEY, claude: !!window._CLAUDE_KEY, openai: !!window._OPENAI_KEY });
+  const [lightMode, setLightMode] = useState(() => localStorage.getItem('lightMode') === 'true');
+  useEffect(() => {
+    document.body.classList.toggle('light', lightMode);
+    localStorage.setItem('lightMode', lightMode);
+  }, [lightMode]);
+  function toggleLight() { setLightMode(m => !m); }
+
+  // Clock
+  useEffect(() => {
+    const t = setInterval(() => {
+      setClockGR(now_gr());
+      setClockET(now_et());
+      setMarketOpen(isMarketOpen());
+      const m = minsToClose();
+      setMinsLeft(m);
+      setWarnClose(m > 0 && m <= 20);
+    }, 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  // Persist
+  useEffect(() => {
+    localStorage.setItem('trades_v3', JSON.stringify(trades));
+    localStorage.setItem('capital_v3', capital.toString());
+  }, [trades, capital]);
+
+  function addAlert(type, msg) {
+    setAlerts(a => [{ type, msg, time: now_gr() }, ...a.slice(0,19)]);
+  }
+
+  function logTrade(trade) {
+    setTrades(t => [...t, trade]);
+    setCapital(c => c + trade.pnl);
+    addAlert(trade.pnl >= 0 ? 'info' : 'crit',
+      `${trade.ticker} ${trade.dir}: ${trade.pnl>=0?'+':''}€${trade.pnl.toFixed(2)} (${(trade.pctChange*100).toFixed(1)}%)`);
+  }
+
+  function addTicker() {
+    const t = newTicker.trim().toUpperCase();
+    if (t && !tickers.includes(t)) {
+      setTickers(prev => {
+        const updated = [...prev, t];
+        // Fetch live price for new ticker
+        const key = window._TD_KEY || TD_KEY;
+        if (key) setTimeout(() => fetchLivePrices([t]), 100);
+        return updated;
+      });
+      setNewTicker('');
+    }
+  }
+
+  async function refresh() {
+    setRefreshing(true);
+    const key = window._TD_KEY || TD_KEY;
+    if (key) {
+      await fetchLivePrices(tickers);
+      addAlert('info', `↻ Live prices updated @ ${now_gr()}`);
+    } else {
+      addAlert('info', `↻ Refreshed @ ${now_gr()} — βάλε TD key για live τιμές`);
+    }
+    setRefreshing(false);
+  }
+
+  const TABS = [
+    { id:'watchlist', label:'WATCHLIST' },
+    { id:'deltasignal', label:'⚡ FLOW INTELLIGENCE' },
+    { id:'flow', label:'OPTIONS FLOW' },
+    { id:'premarket', label:'PRE-MARKET' },
+    { id:'bigmove', label:'🚀 BIG MOVE' },
+    { id:'claude', label:'📊 CLAUDE ANALYSIS' },
+    { id:'scanner', label:'BUFFETT SCANNER' },
+    { id:'ai', label:'AI ANALYSIS' },
+    { id:'notes', label:'📝 NOTEPAD' },
+    { id:'settings', label:'⚙️ SETTINGS' },
+  ];
+
+  function renderTab() {
+    switch(tab) {
+      case 'watchlist': return (
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
+          {tickers.map(t => (
+            <TickerCard key={t} ticker={t} data={tickerData[t]} onAddAlert={addAlert}/>
+          ))}
+        </div>
+      );
+
+      case 'deltasignal': return <DeltaSignalAnalyzer flowTrades={flowTrades} tickerData={tickerData} onAddAlert={addAlert} apiStatus={apiStatus}/>;
+
+      case 'flow': return (
+        <div>
+          <div style={{fontSize:9,color:'var(--muted)',marginBottom:8,lineHeight:1.6}}>
+            <span style={{color:'var(--green)'}}>BULLISH</span> = call on ask / put on bid &nbsp;|&nbsp;
+            <span style={{color:'var(--red)'}}>BEARISH</span> = put on ask / call on bid &nbsp;|&nbsp;
+            <span style={{color:'var(--purple)'}}>★</span> = size &gt; open interest (opening position)
+          </div>
+
+          {/* BARCHART CSV IMPORT */}
+          <BarchartImport
+            onImport={mapped => { setFlowTrades(mapped); }}
+            onAddAlert={addAlert}
+          />
+
+          <FlowTable trades={flowTrades}/>
+          <div className="divider"/>
+          <div className="section-lbl">SIGNAL GUIDE</div>
+          <div style={{fontSize:9,color:'var(--muted)',lineHeight:1.8}}>
+            <b style={{color:'var(--text)'}}>Volume Ratio</b> — Above 1.5× = notable. Above 2× = likely institutional.<br/>
+            <b style={{color:'var(--text)'}}>Options Flow</b> — Large call sweeps = bullish. Large put on ask = bearish bet (not hedge).<br/>
+            <b style={{color:'var(--text)'}}>High Vol + Flat Price</b> — Accumulation/distribution signal before a move.<br/>
+            <b style={{color:'var(--text)'}}>Insider/Congress</b> — Disclosed with delay, buying patterns often precede catalysts.
+          </div>
+        </div>
+      );
+
+      case 'premarket': return (
+        <div>
+          <div style={{fontSize:9,color:'var(--muted)',marginBottom:10}}>Pre-market data (14:00–16:30 GR) · Καθορίζει κατεύθυνση intraday</div>
+          {['SOXL','SOXS','NAIL','QQQ','SPY'].map(t => {
+            const d = tickerData[t];
+            const pre = d?.preChange;
+            return (
+              <div key={t} className="pm-item">
+                <div className="pm-tick">{t}</div>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:8,color:'var(--muted)'}}>PRE-MKT CHANGE</div>
+                  <div className={`pm-ch ${pre>0?'up':pre<0?'down':'neutral'}`}>{pre!=null?(pre>=0?'+':'')+fmt(pre,2)+'%':'—'}</div>
+                </div>
+                <div>
+                  {pre > 1 && <span className="sp sp-bull">GAP UP</span>}
+                  {pre < -1 && <span className="sp sp-bear">GAP DOWN</span>}
+                  {pre != null && Math.abs(pre) <= 1 && <span className="sp sp-warn">NEUTRAL</span>}
+                </div>
+              </div>
+            );
+          })}
+          <div className="divider"/>
+          <div className="etoro-note">
+            <span>⚠ CFD ΚΑΝΟΝΑΣ:</span> Μη ανοίγεις θέση &lt;30 λεπτά πριν κλείσιμο (22:30 GR).<br/>
+            Spread eToro σε SOXL/SOXS: ~0.3-0.7% — μπαίνεις ήδη "κάτω".<br/>
+            Overnight financing: ~0.05%/νύχτα — <span>ΠΟΤΕ overnight σε 3x ETF CFD.</span>
+          </div>
+        </div>
+      );
+
+      case 'bigmove': return <BigMoveDetector onAddAlert={addAlert}/>;
+
+      case 'claude': return <ClaudeAnalysis tickerData={tickerData} flowTrades={flowTrades} onAddAlert={addAlert}/>;
+
+      case 'scanner': return <BuffettScanner tdKey={TD_KEY}/>;
+
+      case 'ai': return <AIPanel tickerData={tickerData} flowTrades={flowTrades}/>;
+
+      case 'notes': return <Notepad/>;
+
+      case 'settings': return <Settings apiStatus={apiStatus} onKeysChanged={setApiStatus}/>;
+
+      default: return null;
+    }
+  }
+
+  return (
+    <div>
+      <TopBar
+        clockGR={clockGR} clockET={clockET} marketOpen={marketOpen}
+        warnClose={warnClose} minsLeft={minsLeft}
+        onRefresh={refresh} refreshing={refreshing} apiStatus={apiStatus}
+        lightMode={lightMode} onToggleLight={toggleLight}
+      />
+
+      {/* TABS */}
+      <div className="tabs">
+        {TABS.map(t => (
+          <div key={t.id} className={`tab ${tab===t.id?'active':''}`} onClick={()=>setTab(t.id)}>{t.label}</div>
+        ))}
+        <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:6,padding:'0 12px'}}>
+          <div className="add-row" style={{margin:0}}>
+            <input placeholder="TQQQ, NVDA, AAPL…" value={newTicker}
+              onChange={e=>setNewTicker(e.target.value)}
+              onKeyDown={e=>e.key==='Enter'&&addTicker()}
+              style={{width:160,fontSize:10,padding:'4px 8px'}}/>
+            <button className="btn" onClick={addTicker}>+ ADD</button>
+          </div>
+        </div>
+      </div>
+
+      {/* MAIN */}
+      <div style={{display:'grid',gridTemplateColumns:'1fr 300px',gap:1,background:'var(--border)'}}>
+        <div className="panel" style={{padding:12}}>
+          <div className="ph">
+            <div className="pt">{TABS.find(t=>t.id===tab)?.label}</div>
+            <div style={{fontSize:9,color:'var(--muted)'}}>Updated {clockGR} · {marketOpen?'live':'closed'}</div>
+          </div>
+          {renderTab()}
+        </div>
+        <Sidebar
+          capital={capital}
+          trades={trades}
+          onLogTrade={logTrade}
+          alerts={alerts}
+        />
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<App/>, document.getElementById('root'));
+</script>
+</body>
+</html>
