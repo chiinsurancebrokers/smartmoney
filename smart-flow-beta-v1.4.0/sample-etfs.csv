@@ -1,4 +1,0 @@
-Symbol,Type,Side,Strike,Expires,DTE,Premium,Open Int,Volume,Size,Delta,Trade,Code,Time
-SMH,Put,ask,280,2026-09-18,15,1000000,200,1000,100,0.50,4.00,BTO,14:45:00
-IGV,Put,ask,90,2026-10-16,42,300000,120,350,40,0.44,2.50,BTO,14:47:00
-BSOL,Call,ask,35,2026-10-16,42,220000,80,200,30,0.48,2.20,BTO,14:48:00
