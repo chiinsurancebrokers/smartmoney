@@ -1,0 +1,17 @@
+import {parseCSV,analyzeRows,ENGINE_VERSION} from '../src/engine.js';
+const base=`Symbol,Type,Side,Strike,Expiration,DTE,Premium,Open Interest,Volume,Size,Delta,Time\nIGV,CALL,ASK,100,2026-10-16,42,100000,100,200,10,0.5,10:00:00\nBSOL,PUT,BID,20,2026-10-16,42,80000,100,150,10,0.4,10:01:00\nXYZ,CALL,ASK,50,2026-10-16,42,50000,100,120,10,0.5,10:02:00`;
+const auto=parseCSV(base);auto.forEach(r=>{r._batchKind='auto';r._rowId=`auto:${r._row}`});auto._meta={...auto._meta,batches:[{kind:'auto',filename:'mixed.csv',rows:auto.length,forcedAssetType:'AUTO'}]};
+const a=analyzeRows(auto);
+const type=s=>a.tickers.find(x=>x.symbol===s)?.asset.type;
+if(type('IGV')!=='ETF')throw new Error(`IGV expected ETF got ${type('IGV')}`);
+if(type('BSOL')!=='ETF')throw new Error(`BSOL expected ETF got ${type('BSOL')}`);
+if(type('XYZ')!=='UNKNOWN')throw new Error(`XYZ expected UNKNOWN got ${type('XYZ')}`);
+const stock=parseCSV(base.replace(/IGV/g,'ABCD').replace(/BSOL/g,'EFGH').replace(/XYZ/g,'IJKL'));
+stock.forEach(r=>{r._forcedAssetType='STOCK';r._batchKind='stocks';r._rowId=`stocks:${r._row}`});stock._meta={...stock._meta,batches:[{kind:'stocks',filename:'stocks.csv',rows:stock.length,forcedAssetType:'STOCK'}]};
+const b=analyzeRows(stock);
+if(b.tickers.some(x=>x.asset.type!=='STOCK'))throw new Error('Dedicated stocks upload did not force STOCK');
+const etf=parseCSV(base.replace(/IGV/g,'ABCD').replace(/BSOL/g,'EFGH').replace(/XYZ/g,'IJKL'));
+etf.forEach(r=>{r._forcedAssetType='ETF';r._batchKind='etfs';r._rowId=`etfs:${r._row}`});etf._meta={...etf._meta,batches:[{kind:'etfs',filename:'etfs.csv',rows:etf.length,forcedAssetType:'ETF'}]};
+const c=analyzeRows(etf);
+if(c.tickers.some(x=>x.asset.type!=='ETF'))throw new Error('Dedicated ETF upload did not force ETF');
+console.log(JSON.stringify({engine:ENGINE_VERSION,auto:a.dataAudit.assetClassification,forcedStocks:b.dataAudit.assetClassification,forcedEtfs:c.dataAudit.assetClassification},null,2));
