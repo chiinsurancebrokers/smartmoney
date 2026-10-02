@@ -1,6 +1,11 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import {
+  ensureStrategySchema,strategyDbEnabled,saveSignalBatch,getSymbolHistory,updateLatestPrice,
+  createThesis,updateThesis,pendingOutcomeSnapshots,upsertOutcome,saveMarketRegime,
+  latestMarketRegime,strategyAnalytics,monitoringBoard
+} from './strategy-store.js';
 
 const app=express();
 const PORT=process.env.PORT||3000;
@@ -12,7 +17,7 @@ app.use(express.json({limit:'2mb'}));
 // healthcheckPath probe (see railway.json) sends no Authorization header, so
 // gating this route would make every deploy fail its own healthcheck once
 // BETA_USER/BETA_PASSWORD are set.
-app.get('/api/health',(_,res)=>res.json({ok:true,service:'smart-flow-beta',version:'1.4.0'}));
+app.get('/api/health',(_,res)=>res.json({ok:true,service:'smart-flow-beta',version:'1.5.0',strategyDb:strategyDbEnabled()}));
 
 function privateGate(req,res,next){
   const user=process.env.BETA_USER,pass=process.env.BETA_PASSWORD;
@@ -342,6 +347,165 @@ app.post('/api/ai/big-move',async(req,res)=>{
 
 app.use('/api',(req,res)=>res.status(404).json({error:`API route not found: ${req.method} ${req.originalUrl}`}));
 app.use((err,req,res,next)=>{if(req.originalUrl?.startsWith('/api/')){console.error('API error:',err);return res.status(err.status||500).json({error:err?.message||'Server error'});}return next(err);});
+
+// --- v1.5 Trend & Strategy Intelligence ------------------------------------
+let strategySchemaReady=false;
+async function strategyReady(){
+  if(!strategyDbEnabled())throw new Error('Strategy database is not configured');
+  if(!strategySchemaReady){await ensureStrategySchema();strategySchemaReady=true;}
+}
+ensureStrategySchema().then(()=>{strategySchemaReady=true;console.log('Strategy database ready');}).catch(e=>console.warn('Strategy database init deferred:',e.message));
+
+app.get('/api/strategy/status',async(req,res)=>{
+  try{await strategyReady();return res.json({ok:true,database:true,version:'1.5.0'});}
+  catch(e){return res.status(503).json({ok:false,database:false,error:e.message});}
+});
+
+app.post('/api/strategy/snapshots',async(req,res)=>{
+  try{
+    await strategyReady();
+    const body=req.body||{},snapshots=Array.isArray(body.snapshots)?body.snapshots:[];
+    if(!snapshots.length)return res.status(400).json({error:'snapshots required'});
+    return res.json(await saveSignalBatch({
+      filename:String(body.filename||'Barchart upload'),
+      rawRowCount:Number(body.rawRowCount||0),
+      engineVersion:String(body.engineVersion||'unknown'),
+      snapshots
+    }));
+  }catch(e){console.error('strategy snapshots:',e);return res.status(500).json({error:e.message});}
+});
+
+app.get('/api/strategy/symbol/:symbol',async(req,res)=>{
+  try{await strategyReady();return res.json(await getSymbolHistory(req.params.symbol,req.query.limit));}
+  catch(e){return res.status(500).json({error:e.message});}
+});
+
+app.post('/api/strategy/price-context',async(req,res)=>{
+  try{await strategyReady();const ok=await updateLatestPrice(req.body?.symbol,req.body?.quote);return res.json({ok});}
+  catch(e){return res.status(500).json({error:e.message});}
+});
+
+app.post('/api/strategy/theses',async(req,res)=>{
+  try{await strategyReady();if(!req.body?.symbol||!req.body?.thesis)return res.status(400).json({error:'symbol and thesis required'});return res.json({thesis:await createThesis(req.body)});}
+  catch(e){return res.status(500).json({error:e.message});}
+});
+app.patch('/api/strategy/theses/:id',async(req,res)=>{
+  try{await strategyReady();return res.json({thesis:await updateThesis(req.params.id,req.body||{})});}
+  catch(e){return res.status(500).json({error:e.message});}
+});
+
+async function fetchOutcomeBars(symbol){
+  const key=process.env.TWELVE_DATA_API_KEY;if(!key)throw new Error('TWELVE_DATA_API_KEY is not configured');
+  const url=\`https://api.twelvedata.com/time_series?symbol=\${encodeURIComponent(symbol)}&interval=1day&outputsize=320&apikey=\${encodeURIComponent(key)}\`;
+  const r=await fetch(url);const text=await r.text();let d={};try{d=text?JSON.parse(text):{};}catch{throw new Error(\`non-JSON response for \${symbol}\`);}
+  if(!r.ok||d.status==='error')throw new Error(d.message||\`Twelve Data error for \${symbol}\`);
+  return (Array.isArray(d.values)?d.values:[]).map(x=>({date:String(x.datetime||'').slice(0,10),close:Number(x.close),high:Number(x.high),low:Number(x.low)})).filter(x=>x.date&&x.close>0).reverse();
+}
+function outcomePacket(snapshot,bars){
+  const signalDate=new Date(snapshot.signal_at).toISOString().slice(0,10);
+  let i=bars.findIndex(x=>x.date>=signalDate);if(i<0)return null;
+  const quoted=Number(snapshot.payload?.quote?.close),entry=Number.isFinite(quoted)&&quoted>0?quoted:bars[i].close;
+  const out={};
+  for(const [key,n] of [['d1',1],['d5',5],['d20',20],['d63',63]]){
+    const j=i+n;if(j>=bars.length){out[key]={available:false};continue;}
+    const window=bars.slice(i+1,j+1),exit=bars[j].close;
+    const favorable=snapshot.bias==='BEARISH'
+      ?((entry-Math.min(...window.map(x=>x.low||x.close)))/entry)*100
+      :((Math.max(...window.map(x=>x.high||x.close))-entry)/entry)*100;
+    const adverse=snapshot.bias==='BEARISH'
+      ?((Math.max(...window.map(x=>x.high||x.close))-entry)/entry)*100
+      :((entry-Math.min(...window.map(x=>x.low||x.close)))/entry)*100;
+    const raw=((exit/entry)-1)*100;
+    out[key]={available:true,date:bars[j].date,close:+exit.toFixed(4),returnPct:+raw.toFixed(2),directionalReturnPct:+(snapshot.bias==='BEARISH'?-raw:raw).toFixed(2),mfePct:+favorable.toFixed(2),maePct:+adverse.toFixed(2)};
+  }
+  return{entryPrice:entry,horizons:out};
+}
+app.post('/api/strategy/outcomes/refresh',async(req,res)=>{
+  try{
+    await strategyReady();
+    const pending=await pendingOutcomeSnapshots(160);
+    const symbols=[...new Set(pending.map(x=>x.symbol))].slice(0,8);
+    const barsBy={};const errors=[];
+    const settled=await Promise.allSettled(symbols.map(async s=>[s,await fetchOutcomeBars(s)]));
+    settled.forEach((x,i)=>{if(x.status==='fulfilled')barsBy[x.value[0]]=x.value[1];else errors.push(\`\${symbols[i]}: \${x.reason?.message||'history error'}\`);});
+    let updated=0;
+    for(const s of pending){
+      const bars=barsBy[s.symbol];if(!bars)continue;const o=outcomePacket(s,bars);if(!o)continue;
+      await upsertOutcome(s.id,s.symbol,s.signal_at,o.entryPrice,o.horizons);updated++;
+    }
+    return res.json({updated,symbols:subjects(symbols),errors,limit:8});
+  }catch(e){console.error('outcome refresh:',e);return res.status(500).json({error:e.message});}
+});
+function subjects(x){return x;}
+
+function marketAssetTrend(m){
+  if(!m)return'UNKNOWN';let z=0;
+  if(Number(m.return5d)>0)z++;else if(Number(m.return5d)<0)z--;
+  if(Number(m.return20d)>0)z+=2;else if(Number(m.return20d)<0)z-=2;
+  if(m.ma20!=null&&m.close!=null)z+=m.close>m.ma20?1:-1;
+  if(m.ma50!=null&&m.close!=null)z+=m.close>m.ma50?1:-1;
+  return z>=2?'UP':z<=-2?'DOWN':'MIXED';
+}
+app.post('/api/strategy/market-regime/refresh',async(req,res)=>{
+  try{
+    await strategyReady();
+    const symbols=['SPY','QQQ','IWM','XLK','XLF','VIXY'];
+    const settled=await Promise.allSettled(symbols.map(s=>getBigMoveHistory(s,process.env.TWELVE_DATA_API_KEY)));
+    const assets=[];const errors=[];
+    settled.forEach((x,i)=>x.status==='fulfilled'?assets.push({...x.value,trend:marketAssetTrend(x.value)}):errors.push(\`\${symbols[i]}: \${x.reason?.message||'history error'}\`));
+    let score=0;
+    for(const a of assets){
+      const unit=a.trend==='UP'?1:a.trend==='DOWN'?-1:0;
+      score+=a.symbol==='VIXY'?-unit:unit;
+      if(['SPY','QQQ'].includes(a.symbol))score+=a.symbol==='VIXY'?0:unit;
+    }
+    const regime=score>=4?'RISK_ON':score<=-4?'RISK_OFF':'MIXED';
+    const saved=await saveMarketRegime(regime,score,{assets:assets.map(a=>({symbol:a.symbol,close:a.close,return5d:a.return5d,return20d:a.return20d,return63d:a.return63d,trend:a.trend})),errors});
+    return res.json({regime:saved});
+  }catch(e){console.error('market regime:',e);return res.status(500).json({error:e.message});}
+});
+app.get('/api/strategy/market-regime',async(req,res)=>{
+  try{await strategyReady();return res.json({regime:await latestMarketRegime()});}
+  catch(e){return res.status(500).json({error:e.message});}
+});
+app.get('/api/strategy/analytics',async(req,res)=>{
+  try{await strategyReady();return res.json(await strategyAnalytics());}
+  catch(e){return res.status(500).json({error:e.message});}
+});
+app.get('/api/strategy/monitor',async(req,res)=>{
+  try{await strategyReady();const symbols=String(req.query.symbols||'').split(',').filter(Boolean);return res.json({rows:await monitoringBoard(symbols)});}
+  catch(e){return res.status(500).json({error:e.message});}
+});
+
+const coachLangObject={type:'object',additionalProperties:false,properties:{en:{type:'string'},el:{type:'string'}},required:['en','el']};
+const coachLangArray={type:'object',additionalProperties:false,properties:{en:{type:'array',items:{type:'string'},maxItems:8},el:{type:'array',items:{type:'string'},maxItems:8}},required:['en','el']};
+const strategyCoachSchema={type:'object',additionalProperties:false,properties:{
+  summary:coachLangObject,strengths:coachLangArray,weaknesses:coachLangArray,tests:coachLangArray
+},required:['summary','strengths','weaknesses','tests']};
+app.post('/api/ai/strategy-coach',async(req,res)=>{
+  try{
+    await strategyReady();const stats=await strategyAnalytics();
+    if(!stats.sampleSize)return res.status(400).json({error:'Outcome history is not sufficient yet'});
+    const packet=JSON.stringify(stats);
+    const rules='Use only the supplied aggregated historical outcomes. Do not predict future prices, do not give personalized buy/sell instructions, and do not claim causation from small samples. Separate observed patterns from hypotheses to test.';
+    const settled=await Promise.allSettled([
+      anthropicJson(\`Analyze this investor decision-process dataset. Identify repeatable strengths, weaknesses and testable process rules. DATA:\\n\${packet}\`,rules,strategyCoachSchema,ANTHROPIC_HEAVY_MAX_TOKENS),
+      openaiJson(\`Act as a skeptical research-methods reviewer. Challenge overfitting, small samples and misleading averages in this strategy dataset. DATA:\\n\${packet}\`,rules,strategyCoachSchema,'strategy_coach_skeptic',OPENAI_DEFAULT_MAX_TOKENS)
+    ]);
+    const primary=settled[0].status==='fulfilled'?settled[0].value:null,second=settled[1].status==='fulfilled'?settled[1].value:null,errors=[];
+    if(settled[0].status==='rejected')errors.push('Claude Coach: '+settled[0].reason.message);
+    if(settled[1].status==='rejected')errors.push('OpenAI Skeptic: '+settled[1].reason.message);
+    if(!primary&&!second)return res.status(503).json({error:'Strategy Coach unavailable',errors});
+    let synthesis=primary||second;
+    if(primary&&second){
+      try{synthesis=await anthropicJson(\`Synthesize a cautious strategy-process review. Keep only claims supported by the aggregate data; convert uncertainty into rules to test.\\nDATA:\\n\${packet}\\nANALYST:\\n\${JSON.stringify(primary)}\\nSKEPTIC:\\n\${JSON.stringify(second)}\`,rules,strategyCoachSchema,ANTHROPIC_HEAVY_MAX_TOKENS);}
+      catch(e){errors.push('Coach synthesis fallback: '+e.message);}
+    }
+    return res.json({primary,second,synthesis,errors,meta:providerMeta(),sampleSize:stats.sampleSize});
+  }catch(e){console.error('strategy coach:',e);return res.status(500).json({error:e.message});}
+});
+// ---------------------------------------------------------------------------
+
 app.use(express.static(path.join(root,'dist')));
 app.get(/.*/,(_,res)=>res.sendFile(path.join(root,'dist','index.html')));
-app.listen(PORT,()=>console.log(`Smart Flow beta v1.4.0 listening on ${PORT}`));
+app.listen(PORT,()=>console.log(`Smart Flow beta v1.5.0 listening on ${PORT}`));
