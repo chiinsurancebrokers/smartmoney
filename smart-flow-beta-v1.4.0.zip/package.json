@@ -1,6 +1,6 @@
 {
   "name": "smart-flow-intelligence-beta",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,7 +14,8 @@
     "check": "npm run smoke && npm run build"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "pg": "^8.13.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.4.1",

@@ -1,3 +1,16 @@
+# v1.5.0 — Trend & Strategy Intelligence
+
+- Added PostgreSQL-backed signal snapshot history.
+- Added independent Trend Strength / Persistence state without changing Smart Money Score.
+- Added ticker trend timeline and change detector.
+- Added Investment Thesis Journal with Close / Invalidate workflow.
+- Added 1d, 5d, 20d and 63d outcome tracking with directional returns, MFE and MAE.
+- Added Strategy Lab analytics and directional hit-rate statistics.
+- Upgraded Watchlist to an Active Monitoring Board.
+- Added stored market-regime context (SPY / QQQ / IWM / XLK / XLF / VIXY).
+- Added AI Strategy Coach using Claude Analyst → OpenAI Skeptic → Claude synthesis over aggregated historical outcomes.
+- Added staggered daily automatic outcome and regime refreshes to protect Twelve Data Basic/free rate limits.
+
 # Changelog
 
 ## v1.4.0 beta
