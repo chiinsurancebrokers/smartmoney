@@ -55,3 +55,6 @@
 @media(max-width:900px){
  .trendMetrics{grid-template-columns:repeat(2,1fr)}.timelineGrid,.analyticsGrid,.coachGrid{grid-template-columns:1fr}.regimeAssets{grid-template-columns:repeat(2,1fr)}.strategyHead{flex-direction:column}.thesisRow{grid-template-columns:1fr}.thesisForm{grid-template-columns:1fr}.thesisForm .wide{grid-column:auto}.monitorBoard{overflow-x:auto}
 }
+
+.thesisState{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;align-items:center}
+.thesisState button{font-size:.7rem;padding:4px 7px}
