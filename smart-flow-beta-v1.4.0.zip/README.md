@@ -1,4 +1,4 @@
-# Smart Flow Intelligence — Private Beta v1.4.0
+# Smart Flow Intelligence — Private Beta v1.5.0
 
 Railway-ready private beta for testing a deterministic Barchart options-flow intelligence engine before SaaS productization.
 
@@ -32,6 +32,23 @@ Core outputs per ticker:
 Browser Back/Forward navigation is supported.
 
 
+
+## Trend & Strategy Intelligence (v1.5.0)
+
+v1.5 adds a persistent research-memory layer without changing the deterministic Smart Money Score. Signal snapshots are stored in PostgreSQL and used to calculate a separate persistence/trend state (Emerging, Building, Established, Weakening, Reversal), ticker timelines and change events.
+
+New research tools include:
+
+- persistent signal history and trend strength
+- Investment Thesis Journal with explicit Close / Invalidate status
+- 1d / 5d / 20d / 63d outcome tracking with directional return, MFE and MAE
+- Strategy Lab analytics by bias, asset type, confidence band, score band and sector confirmation
+- Active Monitoring Board replacing the browser-only watchlist presentation
+- market-regime context from SPY, QQQ, IWM, XLK, XLF and VIXY
+- Claude Analyst → OpenAI Skeptic → Claude synthesis for process-level Strategy Coach reviews
+- staggered daily automatic outcome/regime refreshes, capped and spaced to respect the Twelve Data free-plan workflow
+
+The persistence/trend layer is observational. It does not rescore options flow, and historical outcomes are not treated as guarantees of future performance.
 
 ## Intraday Report (v1.4.0)
 
