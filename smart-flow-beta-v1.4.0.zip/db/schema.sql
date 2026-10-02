@@ -31,3 +31,44 @@ create table if not exists big_move_candidates (
   payload jsonb not null
 );
 create index if not exists big_move_candidates_symbol_scan_idx on big_move_candidates(symbol, scan_id desc);
+
+
+-- v1.5 Trend & Strategy Intelligence
+create table if not exists investment_theses (
+  id bigserial primary key,
+  symbol text not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  status text not null default 'ACTIVE',
+  direction text not null,
+  horizon text,
+  entry_price numeric,
+  trigger_text text,
+  thesis_text text not null,
+  invalidation_text text,
+  target_zone text,
+  notes text,
+  snapshot_id bigint references signal_snapshots(id) on delete set null,
+  closed_at timestamptz,
+  close_note text
+);
+create index if not exists investment_theses_symbol_status_idx on investment_theses(symbol,status,created_at desc);
+
+create table if not exists signal_outcomes (
+  snapshot_id bigint primary key references signal_snapshots(id) on delete cascade,
+  symbol text not null,
+  signal_at timestamptz not null,
+  entry_price numeric,
+  horizons jsonb not null default '{}'::jsonb,
+  refreshed_at timestamptz not null default now()
+);
+create index if not exists signal_outcomes_symbol_idx on signal_outcomes(symbol,signal_at desc);
+
+create table if not exists market_regime_snapshots (
+  id bigserial primary key,
+  captured_at timestamptz not null default now(),
+  regime text not null,
+  score integer not null default 0,
+  payload jsonb not null default '{}'::jsonb
+);
+create index if not exists market_regime_time_idx on market_regime_snapshots(captured_at desc);
