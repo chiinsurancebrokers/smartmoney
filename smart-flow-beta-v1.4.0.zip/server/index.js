@@ -396,9 +396,9 @@ app.patch('/api/strategy/theses/:id',async(req,res)=>{
 
 async function fetchOutcomeBars(symbol){
   const key=process.env.TWELVE_DATA_API_KEY;if(!key)throw new Error('TWELVE_DATA_API_KEY is not configured');
-  const url=\`https://api.twelvedata.com/time_series?symbol=\${encodeURIComponent(symbol)}&interval=1day&outputsize=320&apikey=\${encodeURIComponent(key)}\`;
-  const r=await fetch(url);const text=await r.text();let d={};try{d=text?JSON.parse(text):{};}catch{throw new Error(\`non-JSON response for \${symbol}\`);}
-  if(!r.ok||d.status==='error')throw new Error(d.message||\`Twelve Data error for \${symbol}\`);
+  const url=`https://api.twelvedata.com/time_series?symbol=${encodeURIComponent(symbol)}&interval=1day&outputsize=320&apikey=${encodeURIComponent(key)}`;
+  const r=await fetch(url);const text=await r.text();let d={};try{d=text?JSON.parse(text):{};}catch{throw new Error(`non-JSON response for ${symbol}`);}
+  if(!r.ok||d.status==='error')throw new Error(d.message||`Twelve Data error for ${symbol}`);
   return (Array.isArray(d.values)?d.values:[]).map(x=>({date:String(x.datetime||'').slice(0,10),close:Number(x.close),high:Number(x.high),low:Number(x.low)})).filter(x=>x.date&&x.close>0).reverse();
 }
 function outcomePacket(snapshot,bars){
@@ -427,7 +427,7 @@ app.post('/api/strategy/outcomes/refresh',async(req,res)=>{
     const symbols=[...new Set(pending.map(x=>x.symbol))].slice(0,8);
     const barsBy={};const errors=[];
     const settled=await Promise.allSettled(symbols.map(async s=>[s,await fetchOutcomeBars(s)]));
-    settled.forEach((x,i)=>{if(x.status==='fulfilled')barsBy[x.value[0]]=x.value[1];else errors.push(\`\${symbols[i]}: \${x.reason?.message||'history error'}\`);});
+    settled.forEach((x,i)=>{if(x.status==='fulfilled')barsBy[x.value[0]]=x.value[1];else errors.push(`${symbols[i]}: ${x.reason?.message||'history error'}`);});
     let updated=0;
     for(const s of pending){
       const bars=barsBy[s.symbol];if(!bars)continue;const o=outcomePacket(s,bars);if(!o)continue;
@@ -452,7 +452,7 @@ app.post('/api/strategy/market-regime/refresh',async(req,res)=>{
     const symbols=['SPY','QQQ','IWM','XLK','XLF','VIXY'];
     const settled=await Promise.allSettled(symbols.map(s=>getBigMoveHistory(s,process.env.TWELVE_DATA_API_KEY)));
     const assets=[];const errors=[];
-    settled.forEach((x,i)=>x.status==='fulfilled'?assets.push({...x.value,trend:marketAssetTrend(x.value)}):errors.push(\`\${symbols[i]}: \${x.reason?.message||'history error'}\`));
+    settled.forEach((x,i)=>x.status==='fulfilled'?assets.push({...x.value,trend:marketAssetTrend(x.value)}):errors.push(`${symbols[i]}: ${x.reason?.message||'history error'}`));
     let score=0;
     for(const a of assets){
       const unit=a.trend==='UP'?1:a.trend==='DOWN'?-1:0;
@@ -489,8 +489,8 @@ app.post('/api/ai/strategy-coach',async(req,res)=>{
     const packet=JSON.stringify(stats);
     const rules='Use only the supplied aggregated historical outcomes. Do not predict future prices, do not give personalized buy/sell instructions, and do not claim causation from small samples. Separate observed patterns from hypotheses to test.';
     const settled=await Promise.allSettled([
-      anthropicJson(\`Analyze this investor decision-process dataset. Identify repeatable strengths, weaknesses and testable process rules. DATA:\\n\${packet}\`,rules,strategyCoachSchema,ANTHROPIC_HEAVY_MAX_TOKENS),
-      openaiJson(\`Act as a skeptical research-methods reviewer. Challenge overfitting, small samples and misleading averages in this strategy dataset. DATA:\\n\${packet}\`,rules,strategyCoachSchema,'strategy_coach_skeptic',OPENAI_DEFAULT_MAX_TOKENS)
+      anthropicJson(`Analyze this investor decision-process dataset. Identify repeatable strengths, weaknesses and testable process rules. DATA:\\n${packet}`,rules,strategyCoachSchema,ANTHROPIC_HEAVY_MAX_TOKENS),
+      openaiJson(`Act as a skeptical research-methods reviewer. Challenge overfitting, small samples and misleading averages in this strategy dataset. DATA:\\n${packet}`,rules,strategyCoachSchema,'strategy_coach_skeptic',OPENAI_DEFAULT_MAX_TOKENS)
     ]);
     const primary=settled[0].status==='fulfilled'?settled[0].value:null,second=settled[1].status==='fulfilled'?settled[1].value:null,errors=[];
     if(settled[0].status==='rejected')errors.push('Claude Coach: '+settled[0].reason.message);
@@ -498,7 +498,7 @@ app.post('/api/ai/strategy-coach',async(req,res)=>{
     if(!primary&&!second)return res.status(503).json({error:'Strategy Coach unavailable',errors});
     let synthesis=primary||second;
     if(primary&&second){
-      try{synthesis=await anthropicJson(\`Synthesize a cautious strategy-process review. Keep only claims supported by the aggregate data; convert uncertainty into rules to test.\\nDATA:\\n\${packet}\\nANALYST:\\n\${JSON.stringify(primary)}\\nSKEPTIC:\\n\${JSON.stringify(second)}\`,rules,strategyCoachSchema,ANTHROPIC_HEAVY_MAX_TOKENS);}
+      try{synthesis=await anthropicJson(`Synthesize a cautious strategy-process review. Keep only claims supported by the aggregate data; convert uncertainty into rules to test.\\nDATA:\\n${packet}\\nANALYST:\\n${JSON.stringify(primary)}\\nSKEPTIC:\\n${JSON.stringify(second)}`,rules,strategyCoachSchema,ANTHROPIC_HEAVY_MAX_TOKENS);}
       catch(e){errors.push('Coach synthesis fallback: '+e.message);}
     }
     return res.json({primary,second,synthesis,errors,meta:providerMeta(),sampleSize:stats.sampleSize});
