@@ -30,6 +30,10 @@ export function TrendPanel({symbol,quote,lang='en'}){
       setForm(false);setThesis({direction:'WATCH',horizon:'20D',thesis:'',trigger:'',invalidation:'',targetZone:'',notes:''});await load();
     }catch(e){setErr(e.message)}finally{setSaving(false)}
   }
+  async function setThesisStatus(id,status){
+    try{await api('/api/strategy/theses/'+id,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({status})});await load();}
+    catch(e){setErr(e.message)}
+  }
   if(err)return <section className="strategyCard"><h3>Trend & Strategy Intelligence</h3><div className="warning">{err}</div></section>;
   if(!data)return <section className="strategyCard"><h3>Trend & Strategy Intelligence</h3><p>Loading history…</p></section>;
   const h=data.history||[],tr=data.trend||{},latest=h[0];
@@ -40,7 +44,7 @@ export function TrendPanel({symbol,quote,lang='en'}){
     {!!tr.events?.length&&<div className="changeEvents"><b>{gr?'Change detector':'Change detector'}</b>{tr.events.map((x,i)=><span key={i}>• {x}</span>)}</div>}
     <div className="historyStrip">{h.slice(0,10).map(x=><div key={x.id}><small>{dt(x.signal_at)}</small><b>{signed(x.smart_money_score)}</b><span>{x.confidence}% conf</span><span>{x.coverage}% cov</span></div>)}</div>
     {data.marketRegime&&<div className="regimeInline"><b>{gr?'Τρέχον market regime':'Current market regime'}:</b> {data.marketRegime.regime} · {signed(data.marketRegime.score)}</div>}
-    <div className="thesisList"><div className="sectionHead"><div><h4>{gr?'Investment Thesis Journal':'Investment Thesis Journal'}</h4><span>{gr?'Καταγράφει τι πίστευες τη στιγμή της απόφασης, όχι εκ των υστέρων.':'Records what you believed at decision time, not in hindsight.'}</span></div></div>{!(data.theses||[]).length?<p className="muted">{gr?'Δεν υπάρχει thesis ακόμη.':'No thesis recorded yet.'}</p>:(data.theses||[]).map(x=><div className="thesisRow" key={x.id}><div><b>{x.direction} · {x.horizon||'—'}</b><span>{dt(x.created_at)} {x.entry_price!=null?`· $${Number(x.entry_price).toFixed(2)}`:''}</span></div><p>{x.thesis_text}</p><em>{x.status}</em></div>)}</div>
+    <div className="thesisList"><div className="sectionHead"><div><h4>{gr?'Investment Thesis Journal':'Investment Thesis Journal'}</h4><span>{gr?'Καταγράφει τι πίστευες τη στιγμή της απόφασης, όχι εκ των υστέρων.':'Records what you believed at decision time, not in hindsight.'}</span></div></div>{!(data.theses||[]).length?<p className="muted">{gr?'Δεν υπάρχει thesis ακόμη.':'No thesis recorded yet.'}</p>:(data.theses||[]).map(x=><div className="thesisRow" key={x.id}><div><b>{x.direction} · {x.horizon||'—'}</b><span>{dt(x.created_at)} {x.entry_price!=null?`· ${Number(x.entry_price).toFixed(2)}`:''}</span></div><p>{x.thesis_text}</p><div className="thesisState"><em>{x.status}</em>{x.status==='ACTIVE'&&<><button onClick={()=>setThesisStatus(x.id,'CLOSED')}>Close</button><button onClick={()=>setThesisStatus(x.id,'INVALIDATED')}>Invalidate</button></>}</div></div>)}</div>
     {form&&<div className="thesisForm">
       <label>Direction<select value={thesis.direction} onChange={e=>setThesis({...thesis,direction:e.target.value})}><option>WATCH</option><option>BULLISH</option><option>BEARISH</option></select></label>
       <label>Horizon<select value={thesis.horizon} onChange={e=>setThesis({...thesis,horizon:e.target.value})}><option>1D</option><option>5D</option><option>20D</option><option>63D</option><option>LONGER</option></select></label>
