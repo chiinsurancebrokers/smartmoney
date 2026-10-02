@@ -420,23 +420,24 @@ function outcomePacket(snapshot,bars){
   }
   return{entryPrice:entry,horizons:out};
 }
+async function refreshStrategyOutcomes(){
+  await strategyReady();
+  const pending=await pendingOutcomeSnapshots(160);
+  const symbols=[...new Set(pending.map(x=>x.symbol))].slice(0,8);
+  const barsBy={};const errors=[];
+  const settled=await Promise.allSettled(symbols.map(async s=>[s,await fetchOutcomeBars(s)]));
+  settled.forEach((x,i)=>{if(x.status==='fulfilled')barsBy[x.value[0]]=x.value[1];else errors.push(`${symbols[i]}: ${x.reason?.message||'history error'}`);});
+  let updated=0;
+  for(const s of pending){
+    const bars=barsBy[s.symbol];if(!bars)continue;const o=outcomePacket(s,bars);if(!o)continue;
+    await upsertOutcome(s.id,s.symbol,s.signal_at,o.entryPrice,o.horizons);updated++;
+  }
+  return{updated,symbols,errors,limit:8};
+}
 app.post('/api/strategy/outcomes/refresh',async(req,res)=>{
-  try{
-    await strategyReady();
-    const pending=await pendingOutcomeSnapshots(160);
-    const symbols=[...new Set(pending.map(x=>x.symbol))].slice(0,8);
-    const barsBy={};const errors=[];
-    const settled=await Promise.allSettled(symbols.map(async s=>[s,await fetchOutcomeBars(s)]));
-    settled.forEach((x,i)=>{if(x.status==='fulfilled')barsBy[x.value[0]]=x.value[1];else errors.push(`${symbols[i]}: ${x.reason?.message||'history error'}`);});
-    let updated=0;
-    for(const s of pending){
-      const bars=barsBy[s.symbol];if(!bars)continue;const o=outcomePacket(s,bars);if(!o)continue;
-      await upsertOutcome(s.id,s.symbol,s.signal_at,o.entryPrice,o.horizons);updated++;
-    }
-    return res.json({updated,symbols:subjects(symbols),errors,limit:8});
-  }catch(e){console.error('outcome refresh:',e);return res.status(500).json({error:e.message});}
+  try{return res.json(await refreshStrategyOutcomes());}
+  catch(e){console.error('outcome refresh:',e);return res.status(500).json({error:e.message});}
 });
-function subjects(x){return x;}
 
 function marketAssetTrend(m){
   if(!m)return'UNKNOWN';let z=0;
@@ -446,23 +447,25 @@ function marketAssetTrend(m){
   if(m.ma50!=null&&m.close!=null)z+=m.close>m.ma50?1:-1;
   return z>=2?'UP':z<=-2?'DOWN':'MIXED';
 }
+async function refreshStrategyMarketRegime(){
+  await strategyReady();
+  const key=process.env.TWELVE_DATA_API_KEY;if(!key)throw new Error('TWELVE_DATA_API_KEY is not configured');
+  const symbols=['SPY','QQQ','IWM','XLK','XLF','VIXY'];
+  const settled=await Promise.allSettled(symbols.map(s=>getBigMoveHistory(s,key)));
+  const assets=[];const errors=[];
+  settled.forEach((x,i)=>x.status==='fulfilled'?assets.push({...x.value,trend:marketAssetTrend(x.value)}):errors.push(`${symbols[i]}: ${x.reason?.message||'history error'}`));
+  let score=0;
+  for(const a of assets){
+    const unit=a.trend==='UP'?1:a.trend==='DOWN'?-1:0;
+    score+=a.symbol==='VIXY'?-unit:unit;
+    if(['SPY','QQQ'].includes(a.symbol))score+=unit;
+  }
+  const regime=score>=4?'RISK_ON':score<=-4?'RISK_OFF':'MIXED';
+  return await saveMarketRegime(regime,score,{assets:assets.map(a=>({symbol:a.symbol,close:a.close,return5d:a.return5d,return20d:a.return20d,return63d:a.return63d,trend:a.trend})),errors});
+}
 app.post('/api/strategy/market-regime/refresh',async(req,res)=>{
-  try{
-    await strategyReady();
-    const symbols=['SPY','QQQ','IWM','XLK','XLF','VIXY'];
-    const settled=await Promise.allSettled(symbols.map(s=>getBigMoveHistory(s,process.env.TWELVE_DATA_API_KEY)));
-    const assets=[];const errors=[];
-    settled.forEach((x,i)=>x.status==='fulfilled'?assets.push({...x.value,trend:marketAssetTrend(x.value)}):errors.push(`${symbols[i]}: ${x.reason?.message||'history error'}`));
-    let score=0;
-    for(const a of assets){
-      const unit=a.trend==='UP'?1:a.trend==='DOWN'?-1:0;
-      score+=a.symbol==='VIXY'?-unit:unit;
-      if(['SPY','QQQ'].includes(a.symbol))score+=a.symbol==='VIXY'?0:unit;
-    }
-    const regime=score>=4?'RISK_ON':score<=-4?'RISK_OFF':'MIXED';
-    const saved=await saveMarketRegime(regime,score,{assets:assets.map(a=>({symbol:a.symbol,close:a.close,return5d:a.return5d,return20d:a.return20d,return63d:a.return63d,trend:a.trend})),errors});
-    return res.json({regime:saved});
-  }catch(e){console.error('market regime:',e);return res.status(500).json({error:e.message});}
+  try{return res.json({regime:await refreshStrategyMarketRegime()});}
+  catch(e){console.error('market regime:',e);return res.status(500).json({error:e.message});}
 });
 app.get('/api/strategy/market-regime',async(req,res)=>{
   try{await strategyReady();return res.json({regime:await latestMarketRegime()});}
@@ -504,6 +507,28 @@ app.post('/api/ai/strategy-coach',async(req,res)=>{
     return res.json({primary,second,synthesis,errors,meta:providerMeta(),sampleSize:stats.sampleSize});
   }catch(e){console.error('strategy coach:',e);return res.status(500).json({error:e.message});}
 });
+const STRATEGY_AUTO_REFRESH_HOURS=Math.max(12,Number(process.env.STRATEGY_AUTO_REFRESH_HOURS||24));
+const STRATEGY_AUTO_REFRESH_MS=STRATEGY_AUTO_REFRESH_HOURS*60*60*1000;
+async function autoRefreshOutcomes(){
+  try{
+    const r=await refreshStrategyOutcomes();
+    console.log(`Strategy auto outcome refresh: ${r.updated} snapshots across ${r.symbols.length} symbols`);
+  }catch(e){console.warn('Strategy auto outcome refresh skipped:',e.message);}
+}
+async function autoRefreshRegime(){
+  try{
+    const r=await refreshStrategyMarketRegime();
+    console.log(`Strategy auto market regime: ${r.regime} (${r.score})`);
+  }catch(e){console.warn('Strategy auto market regime refresh skipped:',e.message);}
+}
+// Stagger calls to protect the Twelve Data Basic/free per-minute allowance.
+const outcomeStartupTimer=setTimeout(autoRefreshOutcomes,2*60*1000);outcomeStartupTimer.unref?.();
+const regimeStartupTimer=setTimeout(autoRefreshRegime,8*60*1000);regimeStartupTimer.unref?.();
+const outcomeTimer=setInterval(autoRefreshOutcomes,STRATEGY_AUTO_REFRESH_MS);outcomeTimer.unref?.();
+const regimeStart=setTimeout(()=>{
+  const regimeTimer=setInterval(autoRefreshRegime,STRATEGY_AUTO_REFRESH_MS);regimeTimer.unref?.();
+},6*60*1000);regimeStart.unref?.();
+
 // ---------------------------------------------------------------------------
 
 app.use(express.static(path.join(root,'dist')));
