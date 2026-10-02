@@ -230,12 +230,18 @@ export async function strategyAnalytics(){
   const horizons=['d1','d5','d20','d63'];
   const byHorizon={};
   for(const h of horizons){
-    const vals=rows.map(x=>Number(x.horizons?.[h]?.returnPct)).filter(Number.isFinite);
-    byHorizon[h]={n:vals.length,avg:vals.length?+(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2):null,positivePct:vals.length?+((vals.filter(v=>v>0).length/vals.length)*100).toFixed(1):null};
+    const vals=rows.map(x=>Number(x.horizons?.[h]?.directionalReturnPct)).filter(Number.isFinite);
+    const raw=rows.map(x=>Number(x.horizons?.[h]?.returnPct)).filter(Number.isFinite);
+    byHorizon[h]={
+      n:vals.length,
+      avg:vals.length?+(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2):null,
+      positivePct:vals.length?+((vals.filter(v=>v>0).length/vals.length)*100).toFixed(1):null,
+      rawAvg:raw.length?+(raw.reduce((a,b)=>a+b,0)/raw.length).toFixed(2):null
+    };
   }
   function group(keyFn,h='d20'){
     const m={};
-    for(const x of rows){const v=Number(x.horizons?.[h]?.returnPct);if(!Number.isFinite(v))continue;const k=keyFn(x);(m[k]??=[]).push(v);}
+    for(const x of rows){const v=Number(x.horizons?.[h]?.directionalReturnPct);if(!Number.isFinite(v))continue;const k=keyFn(x);(m[k]??=[]).push(v);}
     return Object.entries(m).map(([key,v])=>({key,n:v.length,avg:+(v.reduce((a,b)=>a+b,0)/v.length).toFixed(2),positivePct:+(v.filter(x=>x>0).length/v.length*100).toFixed(1)})).sort((a,b)=>b.n-a.n);
   }
   return{
