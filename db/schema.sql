@@ -72,3 +72,16 @@ create table if not exists market_regime_snapshots (
   payload jsonb not null default '{}'::jsonb
 );
 create index if not exists market_regime_time_idx on market_regime_snapshots(captured_at desc);
+
+
+-- v1.6 Long-horizon forecast runs (Monte Carlo + dilution model)
+create table if not exists forecast_runs (
+  id bigserial primary key,
+  symbol text not null,
+  created_at timestamptz not null default now(),
+  engine_version text not null,
+  params jsonb not null,
+  summary jsonb not null,
+  bands jsonb not null
+);
+create index if not exists forecast_runs_symbol_idx on forecast_runs(symbol,created_at desc);

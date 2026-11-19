@@ -72,8 +72,37 @@ export async function ensureStrategySchema(){
       payload jsonb not null default '{}'::jsonb
     );
     create index if not exists market_regime_time_idx on market_regime_snapshots(captured_at desc);
+
+    create table if not exists forecast_runs (
+      id bigserial primary key,
+      symbol text not null,
+      created_at timestamptz not null default now(),
+      engine_version text not null,
+      params jsonb not null,
+      summary jsonb not null,
+      bands jsonb not null
+    );
+    create index if not exists forecast_runs_symbol_idx on forecast_runs(symbol,created_at desc);
   `);
   return true;
+}
+
+export async function saveForecastRun({symbol,engineVersion,params,summary,bands}){
+  if(!pool)return null;
+  const r=await pool.query(
+    'insert into forecast_runs(symbol,engine_version,params,summary,bands) values($1,$2,$3,$4,$5) returning id,created_at',
+    [cleanSymbol(symbol),engineVersion,params,summary,bands]
+  );
+  return r.rows[0];
+}
+
+export async function listForecastRuns(symbol,limit=10){
+  if(!pool)return[];
+  const r=await pool.query(
+    'select id,symbol,created_at,engine_version,params,summary from forecast_runs where symbol=$1 order by created_at desc limit $2',
+    [cleanSymbol(symbol),Math.max(1,Math.min(50,Number(limit)||10))]
+  );
+  return r.rows;
 }
 
 export async function saveSignalBatch({filename='manual.csv',rawRowCount=0,engineVersion='unknown',snapshots=[]}){
