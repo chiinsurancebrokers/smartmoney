@@ -58,3 +58,16 @@
 
 .thesisState{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;align-items:center}
 .thesisState button{font-size:.7rem;padding:4px 7px}
+
+/* v1.6 Forecast */
+.fcRow{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:10px 0}.fcOff{opacity:.45}
+.fcField{display:grid;gap:4px;font-size:9px;color:var(--muted);text-transform:uppercase}.fcField em{font-style:normal;text-transform:none;color:#6f7f95}
+.fcField input{background:#0c111a;color:#e9edf5;border:1px solid var(--border);padding:8px;font:inherit;font-size:12px;width:100%}.fcField small{text-transform:none;font-size:9px;color:#6f7f95}
+.fcH{display:flex;align-items:center;gap:14px;margin:16px 0 4px}.fcToggle{font-size:10px;color:var(--muted);font-weight:400;display:flex;gap:6px;align-items:center}
+.fcActions{display:flex;align-items:center;gap:14px;margin-top:6px}.fcErr{color:var(--red);font-size:11px}.fcNote{font-family:system-ui,sans-serif;font-size:12px;line-height:1.6;color:#c2ccda}
+.fcChart{width:100%;height:auto;background:#0b1018;border:1px solid var(--border2)}.fcGrid{stroke:#1c2635;stroke-width:1}.fcAxis{fill:#8b99ad;font-size:10px}
+.fcBand95{fill:var(--purple);opacity:.16}.fcBand75{fill:var(--purple);opacity:.32}.fcMedian{fill:none;stroke:var(--cyan);stroke-width:2.2}.fcHist{fill:none;stroke:#dce4ef;stroke-width:1.6}
+.fcNow{stroke:var(--amber);stroke-dasharray:4 4;stroke-width:1}.fcMinBid{stroke:var(--red);stroke-dasharray:3 5;stroke-width:1;opacity:.8}
+.fcLegend{display:flex;gap:16px;font-size:10px;color:var(--muted);margin:8px 2px}.fcLegend i{display:inline-block;width:14px;height:8px;margin-right:6px;vertical-align:middle}
+.fcSwHist{background:#dce4ef}.fcSwMed{background:var(--cyan)}.fcSw75{background:var(--purple);opacity:.6}.fcSw95{background:var(--purple);opacity:.25}
+.fcSub{display:block;color:#6f7f95;font-size:9px;margin-top:3px;white-space:normal}

@@ -4,8 +4,9 @@ import { fileURLToPath } from 'url';
 import {
   ensureStrategySchema,strategyDbEnabled,saveSignalBatch,getSymbolHistory,updateLatestPrice,
   createThesis,updateThesis,pendingOutcomeSnapshots,upsertOutcome,saveMarketRegime,
-  latestMarketRegime,strategyAnalytics,monitoringBoard
+  latestMarketRegime,strategyAnalytics,monitoringBoard,saveForecastRun,listForecastRuns
 } from './strategy-store.js';
+import {simulate,defaultParams,estimateFromCloses,FORECAST_VERSION} from '../src/forecast.js';
 
 const app=express();
 const PORT=process.env.PORT||3000;
@@ -345,8 +346,65 @@ app.post('/api/ai/big-move',async(req,res)=>{
   }catch(e){console.error('Big Move AI error:',e);return res.status(500).json({error:e?.message||'Big Move AI analysis failed',meta:providerMeta()});}
 });
 
-app.use('/api',(req,res)=>res.status(404).json({error:`API route not found: ${req.method} ${req.originalUrl}`}));
-app.use((err,req,res,next)=>{if(req.originalUrl?.startsWith('/api/')){console.error('API error:',err);return res.status(err.status||500).json({error:err?.message||'Server error'});}return next(err);});
+
+// --- v1.6 Long-horizon forecast (Monte Carlo + dilution) ---------------------
+const closesCache=new Map();
+const CLOSES_CACHE_MS=6*3600_000;
+async function getDailyCloses(symbol,key){
+  const hit=closesCache.get(symbol);if(hit&&Date.now()-hit.at<CLOSES_CACHE_MS)return hit.data;
+  const url=`https://api.twelvedata.com/time_series?symbol=${encodeURIComponent(symbol)}&interval=1day&outputsize=1300&apikey=${encodeURIComponent(key)}`;
+  const r=await fetch(url);const text=await r.text();let d={};try{d=text?JSON.parse(text):{};}catch{throw new Error(`Twelve Data returned non-JSON for ${symbol} (HTTP ${r.status})`);}
+  if(!r.ok||d.status==='error')throw new Error(d.message||`Twelve Data error for ${symbol}`);
+  const bars=(Array.isArray(d.values)?d.values:[]).map(x=>({datetime:x.datetime,close:num(x.close)})).filter(x=>x.close>0).reverse();
+  if(bars.length<60)throw new Error(`Only ${bars.length} daily bars for ${symbol}; need at least 60`);
+  const data={bars};closesCache.set(symbol,{at:Date.now(),data});return data;
+}
+const clampNum=(v,lo,hi,fallback)=>{const n=Number(v);return Number.isFinite(n)?Math.min(hi,Math.max(lo,n)):fallback;};
+app.post('/api/forecast/run',async(req,res)=>{
+  const key=process.env.TWELVE_DATA_API_KEY;if(!key)return res.status(503).json({error:'TWELVE_DATA_API_KEY is not configured'});
+  const b=req.body||{};
+  const symbol=String(b.symbol||'').toUpperCase().replace(/[^A-Z0-9.\-]/g,'');
+  if(!symbol)return res.status(400).json({error:'symbol required'});
+  try{
+    const {bars}=await getDailyCloses(symbol,key);
+    const closes=bars.map(x=>x.close),est=estimateFromCloses(closes);
+    const dd=b.dilution||{},def=defaultParams().dilution;
+    const params={
+      s0:clampNum(b.s0,0.0001,1e6,est.lastClose),
+      years:clampNum(b.years,0.5,10,4.1),
+      nSims:clampNum(b.nSims,500,10000,4000),
+      seed:Math.round(clampNum(b.seed,0,2**31,42)),
+      annualVol:clampNum(b.annualVol,0.05,4,Math.min(4,Math.max(0.1,est.annualVol))),
+      annualDrift:clampNum(b.annualDrift,-0.95,2,0),
+      tNu:clampNum(b.tNu,3,30,4),
+      minBid:clampNum(b.minBid,0.01,100,1),
+      dilution:{
+        enabled:dd.enabled!==false,
+        sharesM:clampNum(dd.sharesM,0.1,1e5,def.sharesM),
+        cashM:clampNum(dd.cashM,0,1e5,def.cashM),
+        quarterlyBurnM:clampNum(dd.quarterlyBurnM,0,1e4,def.quarterlyBurnM),
+        burnChangePctYr:clampNum(dd.burnChangePctYr,-90,200,def.burnChangePctYr),
+        triggerMonths:clampNum(dd.triggerMonths,0,60,def.triggerMonths),
+        targetMonths:clampNum(dd.targetMonths,1,60,def.targetMonths),
+        discountPct:clampNum(dd.discountPct,0,90,def.discountPct),
+        cashCredit:clampNum(dd.cashCredit,0,1,def.cashCredit),
+        failProb:clampNum(dd.failProb,0,1,def.failProb),
+        maxRaiseToMcap:clampNum(dd.maxRaiseToMcap,0.05,10,def.maxRaiseToMcap),
+        cooldownWeeks:Math.round(clampNum(dd.cooldownWeeks,0,52,def.cooldownWeeks))
+      }
+    };
+    const result=simulate(params);
+    let runId=null;
+    try{if(strategyDbEnabled()){await strategyReady();const row=await saveForecastRun({symbol,engineVersion:FORECAST_VERSION,params:result.params,summary:result.summary,bands:{months:result.months,bands:result.bands}});runId=row?.id??null;}}
+    catch(e){console.warn('Forecast run not persisted:',e.message);}
+    const weekly=bars.slice(-520).filter((_,i,a)=>(a.length-1-i)%5===0).map(x=>({datetime:x.datetime,close:x.close}));
+    return res.json({symbol,runId,asOf:bars.at(-1).datetime,history:{...est,weekly},params:result.params,months:result.months,bands:result.bands,summary:result.summary,generatedAt:new Date().toISOString()});
+  }catch(e){return res.status(502).json({error:e.message||'Forecast failed'});}
+});
+app.get('/api/forecast/runs/:symbol',async(req,res)=>{
+  try{await strategyReady();return res.json({rows:await listForecastRuns(req.params.symbol,req.query.limit)});}
+  catch(e){return res.status(503).json({error:e.message});}
+});
 
 // --- v1.5 Trend & Strategy Intelligence ------------------------------------
 let strategySchemaReady=false;
@@ -530,6 +588,9 @@ const regimeStart=setTimeout(()=>{
 },6*60*1000);regimeStart.unref?.();
 
 // ---------------------------------------------------------------------------
+
+app.use('/api',(req,res)=>res.status(404).json({error:`API route not found: ${req.method} ${req.originalUrl}`}));
+app.use((err,req,res,next)=>{if(req.originalUrl?.startsWith('/api/')){console.error('API error:',err);return res.status(err.status||500).json({error:err?.message||'Server error'});}return next(err);});
 
 app.use(express.static(path.join(root,'dist')));
 app.get(/.*/,(_,res)=>res.sendFile(path.join(root,'dist','index.html')));

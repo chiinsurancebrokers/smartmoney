@@ -10,7 +10,8 @@
     "smoke:assets": "node scripts/smoke-assets.mjs",
     "smoke:bigmove": "node scripts/smoke-bigmove.mjs",
     "smoke:report": "node scripts/smoke-report.mjs",
-    "smoke": "npm run smoke:assets && npm run smoke:bigmove && npm run smoke:report",
+    "smoke:forecast": "node scripts/smoke-forecast.mjs",
+    "smoke": "npm run smoke:assets && npm run smoke:bigmove && npm run smoke:report && npm run smoke:forecast",
     "check": "npm run smoke && npm run build"
   },
   "dependencies": {
